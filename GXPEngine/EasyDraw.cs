@@ -13,7 +13,7 @@ namespace GXPEngine
 	/// </summary>
 	[Serializable] public class EasyDraw : Canvas 
 	{
-		public static Font DefaultFont = new Font ("Noto Sans", 15);
+		public static Font DefaultFont = new Font ("Noto Sans", 12);
 
 		public CenterMode HorizontalTextAlign = CenterMode.Min;
 		public CenterMode VerticalTextAlign = CenterMode.Max;
