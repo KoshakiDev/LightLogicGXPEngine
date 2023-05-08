@@ -6,7 +6,7 @@ namespace GXPEngine
 	/// <summary>
 	/// Defines different BlendModes. Only six present now, but you can add your own.
 	/// </summary>
-	public class BlendMode
+	[Serializable] public class BlendMode
 	{
 		/// <summary>
 		/// The traditional and default way of blending.

@@ -3,15 +3,14 @@ using System.Collections;
 
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
 
 using GXPEngine.OpenGL;
 
 namespace GXPEngine.Core
 {
-	public class Texture2D
+	[Serializable] public class Texture2D
 	{
-		private static Hashtable LoadCache = new Hashtable();
+		private static readonly Hashtable LoadCache = new Hashtable();
 		private static Texture2D lastBound = null;
 		
 		const int UNDEFINED_GLTEXTURE 	= 0;
@@ -35,18 +34,32 @@ namespace GXPEngine.Core
 		public Texture2D (Bitmap bitmap) {
 			SetBitmap (bitmap);
 		}
+		public Texture2D(Bitmap bitmap, string filename){
+			SetBitmap(bitmap, filename);
+		}
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetInstance()
 		//------------------------------------------------------------------------------------------------------------------------
 		public static Texture2D GetInstance (string filename, bool keepInCache=false) {
-			Texture2D tex2d = LoadCache[filename] as Texture2D;
-			if (tex2d == null) {
-				tex2d = new Texture2D(filename);
-				LoadCache[filename] = tex2d;
-			}
-			tex2d.stayInCache |= keepInCache; // setting it once to true keeps it in cache
+            if (!(LoadCache[filename] is Texture2D tex2d))
+            {
+                tex2d = new Texture2D(filename);
+                LoadCache[filename] = tex2d;
+            }
+            tex2d.stayInCache |= keepInCache; 
 			tex2d.count ++;
+			return tex2d;
+		}
+		public static Texture2D GetInstance(Texture2D texture2D, bool keepInCache = false)
+		{
+            if (!(LoadCache[texture2D.filename] is Texture2D tex2d))
+            {
+                tex2d = new Texture2D(texture2D.bitmap, texture2D.filename);
+				LoadCache[texture2D.filename] = tex2d;
+			}
+            tex2d.stayInCache |= keepInCache; 
+			tex2d.count++;
 			return tex2d;
 		}
 
@@ -65,7 +78,7 @@ namespace GXPEngine.Core
 
 		public void Dispose () {
 			if (_filename != "") {
-				Texture2D.RemoveInstance (_filename);
+				RemoveInstance (_filename);
 			}
 		}
 
@@ -155,6 +168,13 @@ namespace GXPEngine.Core
 			_bitmap = bitmap;
 			CreateGLTexture ();
 		}
+
+		private void SetBitmap(Bitmap bitmap, string filename){
+			_filename = filename;
+			_bitmap = bitmap;
+			CreateGLTexture();
+		}
+
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														CreateGLTexture()

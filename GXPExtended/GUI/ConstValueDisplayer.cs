@@ -1,6 +1,7 @@
 ﻿using GXPEngine;
+using System;
 
-public class ConstValueDisplayer<T> : EasyDraw 
+[Serializable] public class ConstValueDisplayer<T> : EasyDraw 
 {
     private T _value;
     public ConstValueDisplayer(T valueGetter, int width, int height) : base(width, height) => _value = valueGetter;

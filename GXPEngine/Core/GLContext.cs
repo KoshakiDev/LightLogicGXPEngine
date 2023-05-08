@@ -2,6 +2,7 @@
 #define STRETCH_ON_RESIZE
 
 using System;
+using System.Collections.Generic;
 using GXPEngine.OpenGL;
 
 namespace GXPEngine.Core {
@@ -11,7 +12,7 @@ namespace GXPEngine.Core {
 		public int width, height;
 	}
 	
-	public class GLContext {
+	[Serializable] public class GLContext {
 		
 		const int MAXKEYS = 65535;
 		const int MAXBUTTONS = 255;
@@ -21,13 +22,13 @@ namespace GXPEngine.Core {
 		private static readonly bool[] keyup = new bool[MAXKEYS+1];
 		private static readonly bool[] buttons = new bool[MAXBUTTONS+1];
 		private static readonly bool[] mousehits = new bool[MAXBUTTONS+1];
-		private static readonly bool[] mouseup = new bool[MAXBUTTONS+1]; //mouseup kindly donated by LeonB
+		private static readonly bool[] mouseup = new bool[MAXBUTTONS+1];
 		private static int keyPressedCount = 0;
 		private static bool anyKeyDown = false;
 
 		public static int mouseX = 0;
 		public static int mouseY = 0;
-		
+
 		private Game _owner;
         private static SoundSystem _soundSystem;
 		
@@ -302,7 +303,16 @@ namespace GXPEngine.Core {
 		public static bool GetKey(int key) {
 			return keys[key];
 		}
-		
+
+		public static int[] GetKeys()
+		{
+			List<int> pressedKeys = new List<int>();
+            for (int i = 0; i < keys.Length; i++)
+				if (keys[i])
+					pressedKeys.Add(i);
+			return pressedKeys.ToArray();
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														GetKeyDown()
 		//------------------------------------------------------------------------------------------------------------------------

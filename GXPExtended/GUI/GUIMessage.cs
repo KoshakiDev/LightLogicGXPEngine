@@ -2,7 +2,8 @@
 using System.Drawing;
 using System;
 
-public class Message : Sprite
+[Serializable]
+public class GUIMessage : Sprite
 {
     private const float CHAR_DELAY = 0.2f;
     private float _timeCounter = 0;
@@ -16,7 +17,7 @@ public class Message : Sprite
     private bool _waitForContinue = false;
     private Action _onFinishedAction;
 
-    public Message(string[] lines, Action onFinishedAction = null) : base("MessageBox")
+    public GUIMessage(string[] lines, Action onFinishedAction = null) : base("MessageBox")
     {
         Game.main.AddChild(this);
 

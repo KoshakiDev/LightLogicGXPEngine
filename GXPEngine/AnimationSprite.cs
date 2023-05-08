@@ -6,7 +6,7 @@ namespace GXPEngine
 	/// <summary>
 	/// Animated Sprite. Has all the functionality of a regular sprite, but supports multiple animation frames/subimages.
 	/// </summary>
-	public class AnimationSprite : Sprite
+	[Serializable] public class AnimationSprite : Sprite
 	{
 		protected float _frameWidth;
 		protected float _frameHeight;
@@ -49,17 +49,17 @@ namespace GXPEngine
 		/// <param name="addCollider">
 		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
 		/// </param> 
-		public AnimationSprite (string filename, int cols, int rows, int frames=-1, bool keepInCache=false, bool addCollider=true) : base(filename,keepInCache,addCollider) 
-			=> ResetParameters(filename, cols, rows, frames, keepInCache, addCollider);
+		public AnimationSprite (string filename, int cols, int rows, int frames=-1, bool keepInCache=false, string layerMask = "noMask") : base(filename, keepInCache, layerMask: layerMask) 
+			=> ResetParameters(filename, cols, rows, frames, keepInCache, layerMask);
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														LateAnimSprite()
 		//------------------------------------------------------------------------------------------------------------------------
-		public void ResetParameters(string filename, int cols, int rows, int frames = -1, bool keepInCache = false, bool addCollider = true)
+		public void ResetParameters(string filename, int cols, int rows, int frames = -1, bool keepInCache = false, string layerMask = "noMask")
 		{
 			name = filename;
 			initializeAnimFrames(cols, rows, frames);
-			base.ResetParameters(filename, keepInCache, addCollider);
+			base.ResetParameters(filename, keepInCache);
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GXPEngine.AnimSprite"/> class.
@@ -82,7 +82,7 @@ namespace GXPEngine
 		/// <param name="addCollider">
 		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
 		/// </param> 
-		public AnimationSprite (System.Drawing.Bitmap bitmap, int cols, int rows, int frames=-1, bool addCollider=true) : base(bitmap,addCollider)
+		public AnimationSprite (System.Drawing.Bitmap bitmap, int cols, int rows, int frames=-1, string layerMask = "noMask") : base(bitmap, layerMask)
 		{
 			name = "BMP " + bitmap.Width + "x" + bitmap.Height;
 			initializeAnimFrames(cols, rows, frames);

@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class Debug
+public static class Debug
 {
     public static void Log(string message)
     {
@@ -30,6 +30,13 @@ public class Debug
                 Console.Write(value + " ");
             }
         }
+        Console.WriteLine("");
+    }
+    public static void Log(Component component)
+    {
+        Console.ForegroundColor = ConsoleColor.DarkGray;
+        Console.Write(component.GetType().Name);
+        Console.ResetColor();
         Console.WriteLine("");
     }
 }

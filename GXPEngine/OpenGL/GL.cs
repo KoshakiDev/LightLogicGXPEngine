@@ -166,7 +166,7 @@ namespace GXPEngine.OpenGL {
 		public delegate void GLFWKeyCallback(int key, int action);
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
 		public delegate void GLFWMouseButtonCallback(int button, int action);
-		
+
 		[DllImport("lib/glfw.dll")]
 		public static extern void glfwSetTime (double time);
 		[DllImport("lib/glfw.dll")]

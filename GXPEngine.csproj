@@ -41,31 +41,54 @@
     <LangVersion>7.3</LangVersion>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Setup</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GXPExtended\GUI\VerticalList.cs" />
+    <Compile Include="GXPExtended\GXPAEditor\GXPAssetEditor.cs" />
+    <Compile Include="Managers\AssetManager.cs" />
     <Compile Include="GXPExtended\Debug.cs" />
+    <Compile Include="GXPExtended\Core\IRefreshable.cs" />
+    <Compile Include="Physics\Components\Colliders\CircleCollider.cs" />
+    <Compile Include="Physics\Components\Colliders\Collider.cs" />
+    <Compile Include="Physics\Components\Colliders\PolygonCollider.cs" />
+    <Compile Include="Physics\Managers\Collision.cs" />
+    <Compile Include="Physics\Components\Colliders\CollisionData.cs" />
+    <Compile Include="Physics\Components\Colliders\LineCollider.cs" />
+    <Compile Include="Physics\Components\Colliders\RectCollider.cs" />
+    <Compile Include="Physics\Components\PlayerController.cs" />
+    <Compile Include="Physics\Managers\Physics.cs" />
     <Compile Include="Physics\Vec2.cs" />
-    <Compile Include="Physics\Component.cs" />
+    <Compile Include="Physics\Components\Component.cs" />
     <Compile Include="GXPExtended\GUI\ConstValueDisplayer.cs" />
     <Compile Include="GXPEngine\AddOns\Gizmos.cs" />
     <Compile Include="GXPEngine\AddOns\SpriteBatch.cs" />
     <Compile Include="GXPEngine\AddOns\TiledLoader.cs" />
     <Compile Include="GXPExtended\Camera.cs" />
-    <Compile Include="GXPExtended\GUI\Message.cs" />
+    <Compile Include="GXPExtended\GUI\GUIMessage.cs" />
     <Compile Include="GXPExtended\GUI\ValueDisplayer.cs" />
-    <Compile Include="GXPExtended\GUI\Button.cs" />
+    <Compile Include="GXPExtended\GUI\GUIButton.cs" />
     <Compile Include="GXPExtended\SoundManager.cs" />
     <Compile Include="GXPExtended\Core\Mathf.cs" />
     <Compile Include="GXPExtended\Core\MathfInternal.cs" />
     <Compile Include="GXPExtended\Core\Vector2.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="GXPExtended\ObjectPool.cs" />
-    <Compile Include="Physics\Rigidbody.cs" />
+    <Compile Include="Physics\Components\Rigidbody.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="SetupMain.cs" />
     <Compile Include="GXPEngine\Core\Canvas.cs" />
@@ -75,8 +98,6 @@
     <Compile Include="GXPEngine\SoundChannel.cs" />
     <Compile Include="GXPEngine\Sprite.cs" />
     <Compile Include="GXPEngine\Core\BlendMode.cs" />
-    <Compile Include="GXPEngine\Core\BoxCollider.cs" />
-    <Compile Include="GXPEngine\Core\Collider.cs" />
     <Compile Include="GXPEngine\Core\GLContext.cs" />
     <Compile Include="GXPEngine\Core\Rectangle.cs" />
     <Compile Include="GXPEngine\Core\Texture2D.cs" />
@@ -92,20 +113,21 @@
     <Compile Include="GXPEngine\AddOns\MouseHandler.cs" />
     <Compile Include="GXPEngine\Utils\Time.cs" />
     <Compile Include="GXPEngine\Utils\Utils.cs" />
-    <Compile Include="GXPEngine\AddOns\Camera.cs" />
+    <Compile Include="GXPEngine\AddOns\RenderCamera.cs" />
     <Compile Include="GXPEngine\Managers\HierarchyManager.cs" />
     <Compile Include="GXPEngine\AddOns\EngineSettings.cs" />
     <Compile Include="GXPEngine\AddOns\TiledMapParser.cs" />
     <Compile Include="GXPEngine\AddOns\Window.cs" />
     <Compile Include="GXPEngine\EasyDraw.cs" />
-    <Compile Include="GXPEngine\Core\Collision.cs" />
     <Compile Include="GXPEngine\Core\SoundSystem.cs" />
     <Compile Include="GXPEngine\FMOD\FMODSoundSystem.cs" />
     <Compile Include="GXPEngine\SoLoud\Soloud.cs" />
     <Compile Include="GXPEngine\SoLoud\SoloudSoundSystem.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Physics\Collissions\" />
-    <Folder Include="Physics\Rigidbody\" />
+    <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.manifest" />
   </ItemGroup>
 </Project>

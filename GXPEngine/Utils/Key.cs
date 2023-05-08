@@ -122,7 +122,6 @@ namespace GXPEngine
 		public const int NUM_LOCK	= 319;
 		public const int CAPS_LOCK	= 320;
 
-
 	}
 }
 

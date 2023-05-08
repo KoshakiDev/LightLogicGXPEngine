@@ -12,7 +12,7 @@ namespace GXPEngine {
 	/// Similarly, you can use HierarchyManager.Instance.LateCall to postpone a certain method call until 
 	/// after the update loop.
 	/// </summary>
-	public class HierarchyManager {
+	[Serializable] public class HierarchyManager {
 
 		struct GameObjectPair {
 			public GameObject parent;

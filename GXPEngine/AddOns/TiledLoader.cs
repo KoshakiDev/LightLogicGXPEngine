@@ -232,7 +232,7 @@ namespace TiledMapParser {
 
 			float imageWidth = spr.width/spr.scaleX;
 			float imageHeight = spr.height/spr.scaleY;
-			Vector2 newCenter = spr.TransformPoint((newOriginRelativeX-oldOriginX) * imageWidth, (newOriginRelativeY-oldOriginY) * imageHeight);
+			Vec2 newCenter = spr.TransformPoint((newOriginRelativeX-oldOriginX) * imageWidth, (newOriginRelativeY-oldOriginY) * imageHeight);
 			//Console.WriteLine("Setting origin. x={0} y={1} w={2} h={3} r={4} tx={5} ty={6}. nO={7},{8}",
 			//	spr.x,spr.y,spr.width,spr.height,spr.rotation,newCenter.x,newCenter.y,newOriginRelativeX,newOriginRelativeY);
 			spr.x=newCenter.x;
@@ -251,7 +251,7 @@ namespace TiledMapParser {
 		/// <param name="normalizedOriginX">the new x-origin, normalized (=typically between 0 and 1)</param>
 		/// <param name="normalizedOriginY">the new y-origin, normalized (=typically between 0 and 1)</param>
 		public static void SetPositionRotationScaleOrigin(Sprite newSprite, TiledObject obj, float normalizedOriginX = 0.5f, float normalizedOriginY = 0.5f) {
-			newSprite.scale=1;
+			newSprite.scale = new Vec2(1,1);
 			// SetOrigin according to Tiled's weird and inconsistent conventions:
 			float originY = obj.ImageID>=0 ? 1 : 0;
 			newSprite.SetOrigin(0, originY * newSprite.height);
@@ -375,7 +375,7 @@ namespace TiledMapParser {
 						}
 					}
 					if (anim==null) {
-						anim = new AnimationSprite(Path.Combine(_foldername, tileSet.Image.FileName), tileSet.Columns, tileSet.Rows, -1, false, addColliders);
+						anim = new AnimationSprite(Path.Combine(_foldername, tileSet.Image.FileName), tileSet.Columns, tileSet.Rows, -1, false);
 					}
 					anim.Mirror(obj.MirrorX, obj.MirrorY);
 					anim.SetFrame(frame);
@@ -433,7 +433,7 @@ namespace TiledMapParser {
 					AnimationSprite Tile = new AnimationSprite(
 						Path.Combine(_foldername, tileSet.Image.FileName),
 						tileSet.Columns, tileSet.Rows,
-						-1, false, addColliders
+						-1, false
 					);
 					Tile.SetFrame(frame-tileSet.FirstGId);
 					Tile.x = c * map.TileWidth;
@@ -453,7 +453,7 @@ namespace TiledMapParser {
 			if (map.ImageLayers.Length<=index) return;
 			ImageLayer layer = map.ImageLayers[index];
 			Console.WriteLine("Loading image: "+layer.Image);
-			Sprite image = new Sprite(Path.Combine(_foldername, layer.Image.FileName), false, addColliders);
+			Sprite image = new Sprite(Path.Combine(_foldername, layer.Image.FileName), false);
 			image.x=layer.offsetX;
 			image.y=layer.offsetY;
 			image.alpha=layer.Opacity;

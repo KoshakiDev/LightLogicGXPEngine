@@ -7,14 +7,14 @@ public static class SoundManager
     #region Fields
 
     private static Dictionary<string, SoundChannel> _loopingSoundChannels;
-    private static SoloudSoundSystem _soLoudSoundSystem = new SoloudSoundSystem();
+    public static SoloudSoundSystem SoLoudSoundSystem { get; private set; } = new SoloudSoundSystem();
 
     #endregion
 
     #region Init
     public static void Init()
     {
-        _soLoudSoundSystem.Init();
+        SoLoudSoundSystem.Init();
         _loopingSoundChannels = new Dictionary<string, SoundChannel>();
     }
     #endregion

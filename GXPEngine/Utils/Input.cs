@@ -17,7 +17,12 @@ namespace GXPEngine
 		public static bool GetKey(int key) {
 			return GLContext.GetKey(key);
 		}
-		
+
+		public static int[] GetKeys()
+		{
+			return GLContext.GetKeys();
+		}
+
 		/// <summary>
 		/// Returns 'true' if specified key was pressed down during the current frame
 		/// </summary>

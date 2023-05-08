@@ -11,24 +11,24 @@ public enum ButtonState
 /// This class represents GUI Button logic,
 /// listens to mouse hovering and clicking
 /// </summary>
-public class Button : Sprite
+[Serializable]public class GUIButton : Sprite
 {
     #region Fields and properties
     public bool IsActive { get; private set; } = true;
 
-    private Action _action;
-    public const int NormalColor = 0x555555;
-    public const int HoveringColor = 0xFFFFFF;
-    public const int ClickedColor = 0x77bb77;
+    [NonSerialized] private Action _action;
+    public const int NormalColor = 0xbbbbbb;
+    public const int HoveringColor = 0xffffff;
+    public const int ClickedColor = 0x888888;
     private int[] _colors = new int[3] { NormalColor, HoveringColor, ClickedColor };
     private ButtonState _state = ButtonState.Normal;
 
     private float _clickFadeCounter = 0f;
-    private const float CLICK_FADEOUT_TIME = 120f;
+    private const float CLICK_FADEOUT_TIME = 0.1f;
     #endregion
 
     #region Constructor
-    public Button(string filename, Action action = null) : base(filename) 
+    public GUIButton(string filename, Action action = null, string layerMask = "noMask" ) : base(filename, layerMask: layerMask) 
     {
         SetOrigin(width/2, height/2);
         SetAction(action); 
@@ -41,6 +41,8 @@ public class Button : Sprite
     {
         if (IsActive)
             RefreshColor();
+
+        ListenMouseInputAndManageStates();
     }
     public void SetState(bool state) => IsActive = state;
     private void RefreshColor() => color = (uint) _colors[(int)_state];
@@ -54,19 +56,17 @@ public class Button : Sprite
         }
         if (_state != ButtonState.Clicked)
         {
-            if (HitTestPoint(Input.mouseX, Input.mouseY))
-            {
+            if (HitTest(new Vec2(Input.mouseX, Input.mouseY)))
+            {    
                 if (_state == ButtonState.Normal)
-                {
                     _state = ButtonState.Hovering;
-                }
             }
             else if (_state == ButtonState.Hovering)
                 _state = ButtonState.Normal;
         }
         else
         {
-            _clickFadeCounter -= Time.deltaTime;
+            _clickFadeCounter -= Time.deltaTime / 1000f;
             if (_clickFadeCounter <= 0)
                 _state = ButtonState.Hovering;
         }

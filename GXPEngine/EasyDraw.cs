@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.Drawing.Text;
 
@@ -10,7 +11,7 @@ namespace GXPEngine
 	/// The API is inspired by Processing: internal states are maintained for font, fill/stroke color, etc., 
 	/// and everything works with simple methods that have many overloads.
 	/// </summary>
-	public class EasyDraw : Canvas 
+	[Serializable] public class EasyDraw : Canvas 
 	{
 		public static Font DefaultFont = new Font ("Noto Sans", 15);
 
@@ -18,9 +19,10 @@ namespace GXPEngine
 		public CenterMode VerticalTextAlign = CenterMode.Max;
 		public CenterMode HorizontalShapeAlign = CenterMode.Center;
 		public CenterMode VerticalShapeAlign = CenterMode.Center;
-		public Font font { get; protected set;}
-		public Pen pen { get; protected set;}
-		public SolidBrush brush	{ get; protected set;}
+		[NonSerialized] public Font font;
+		[NonSerialized] public Pen pen;
+
+		[NonSerialized] public SolidBrush brush;
 
 		protected bool _stroke=true;
 		protected bool _fill=true;
@@ -31,7 +33,7 @@ namespace GXPEngine
 		/// <param name="width">width in pixels</param>
 		/// <param name="height">height in pixels</param>
 		/// <param name="addCollider">whether the canvas should have a collider</param>
-		public EasyDraw (int width, int height, bool addCollider=true) : base (new Bitmap (width, height),addCollider)
+		public EasyDraw (int width, int height, bool addCollider=true, string layerMask = "noMask") : base (new Bitmap (width, height), layerMask: layerMask)
 		{
 			Initialize ();
 		}
@@ -41,7 +43,7 @@ namespace GXPEngine
 		/// </summary>
 		/// <param name="bitmap">The bitmap (image) that should be on the canvas</param>
 		/// <param name="addCollider">whether the canvas should have a collider</param>
-		public EasyDraw (System.Drawing.Bitmap bitmap, bool addCollider=true) : base (bitmap,addCollider)
+		public EasyDraw (Bitmap bitmap, string layerMask = "noMask") : base (bitmap, layerMask: layerMask)
 		{
 			Initialize ();
 		}
@@ -51,7 +53,7 @@ namespace GXPEngine
 		/// </summary>
 		/// <param name="filename">the name of the file that contains a sprite (png, jpg)</param>
 		/// <param name="addCollider">whether the canvas should have a collider</param>
-		public EasyDraw (string filename, bool addCollider=true) : base(filename,addCollider)
+		public EasyDraw (string filename) : base(filename)
 		{
 			Initialize ();
 		}

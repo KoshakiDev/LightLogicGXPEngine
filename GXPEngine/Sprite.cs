@@ -1,13 +1,9 @@
 using System;
-using System.Windows.Forms.Layout;
 using GXPEngine.Core;
  
 
 namespace GXPEngine
 {
-	/// <summary>
-	/// The Sprite class holds 2D images that can be used as objects in your game.
-	/// </summary>
 	public enum ImageExtension
     {
 		PNG,
@@ -15,7 +11,10 @@ namespace GXPEngine
 		JPEG,
 		BMP
     }
-	public class Sprite : GameObject
+	/// <summary>
+	/// The Sprite class holds 2D images that can be used as objects in your game.
+	/// </summary>
+	[Serializable] public class Sprite : GameObject, IRefreshable
 	{
 		protected Texture2D _texture;
 		public Texture2D Texture
@@ -48,7 +47,7 @@ namespace GXPEngine
 		/// <param name="addCollider">
 		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
 		/// </param> 
-		public Sprite (System.Drawing.Bitmap bitmap, bool addCollider = true) : base(addCollider)
+		public Sprite (System.Drawing.Bitmap bitmap, string layerMask = "noMask") : base(layerMask)
 		{
 			if (Game.main == null) {
 				throw new Exception ("Sprites cannot be created before creating a Game instance.");
@@ -57,7 +56,7 @@ namespace GXPEngine
 			initializeFromTexture(new Texture2D(bitmap));
 		}
 
-		public Sprite(Texture2D texture, bool addCollider = true) : base(addCollider) {
+		public Sprite(Texture2D texture, bool addCollider = true) : base() {
 			if (Game.main == null) {
 				throw new Exception("Sprites cannot be created before creating a Game instance.");
 			}
@@ -88,19 +87,14 @@ namespace GXPEngine
 		/// If <c>true</c>, the sprite's texture will be kept in memory for the entire lifetime of the game. 
 		/// This takes up more memory, but removes load times.
 		/// </param> 
-		/// <param name="addCollider">
-		/// If <c>true</c>, this sprite will have a collider that will be added to the collision manager.
-		/// </param> 
-		public Sprite (string filename, bool keepInCache=false, bool addCollider = true, ImageExtension imageExtension = ImageExtension.PNG) : base(addCollider) 
-			=> ResetParameters(filename, keepInCache,addCollider, imageExtension);
+		public Sprite (string filename, bool keepInCache=false, ImageExtension imageExtension = ImageExtension.PNG, string layerMask = "noMask") : base(layerMask) 
+			=> ResetParameters(filename, keepInCache, imageExtension);
 
-		public void ResetParameters(string filename, bool keepInCache = false, bool addCollider = true, ImageExtension imageExtension = ImageExtension.PNG)
+		public void ResetParameters(string filename, bool keepInCache = false, ImageExtension imageExtension = ImageExtension.PNG)
 		{
-			base.ResetParameters(addCollider);
+			base.ResetParameters();
 			if (Game.main == null)
-			{
 				throw new Exception("Sprites cannot be created before creating a Game instance.");
-			}
 
 			string extension = Texture2D.ImageExtension(imageExtension);
 			name = filename;
@@ -133,13 +127,6 @@ namespace GXPEngine
 			} else {
 				return _uvs;
 			}
-		}
-
-		//------------------------------------------------------------------------------------------------------------------------
-		//														createCollider
-		//------------------------------------------------------------------------------------------------------------------------
-		protected override Collider createCollider() {
-			return new BoxCollider (this);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -191,7 +178,7 @@ namespace GXPEngine
 		//------------------------------------------------------------------------------------------------------------------------
 		override protected void RenderSelf(GLContext glContext) {
 			if (game != null) {
-				Vector2[] bounds = GetExtents();
+				Vec2[] bounds = GetExtents();
 				float maxX = float.MinValue;
 				float maxY = float.MinValue;
 				float minX = float.MaxValue;
@@ -239,15 +226,27 @@ namespace GXPEngine
 		/// <returns>
 		/// The extents.
 		/// </returns>
-		public Vector2[] GetExtents() {
-			Vector2[] ret = new Vector2[4];
+		public Vec2[] GetExtents() {
+			Vec2[] ret = new Vec2[4];
 			ret[0] = TransformPoint(_bounds.left * 0.6f, _bounds.top * 0.6f);
 			ret[1] = TransformPoint(_bounds.right * 0.6f, _bounds.top * 0.6f);
 			ret[2] = TransformPoint(_bounds.right * 0.6f, _bounds.bottom * 0.6f);
 			ret[3] = TransformPoint(_bounds.left * 0.6f, _bounds.bottom * 0.6f);
 			return ret;			
 		}
-		
+
+		public bool HitTest(Vec2 point)
+		{
+			Vec2[] extents = GetExtents();
+
+			float xMin = Mathf.Min(extents[0].x, extents[1].x, extents[2].x, extents[3].x);
+			float xMax = Mathf.Max(extents[0].x, extents[1].x, extents[2].x, extents[3].x);
+			float yMin = Mathf.Min(extents[0].y, extents[1].y, extents[2].y, extents[3].y);
+			float yMax = Mathf.Max(extents[0].y, extents[1].y, extents[2].y, extents[3].y);
+
+			return !(point.x < xMin || point.x > xMax || point.y < yMin || point.y > yMax);
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														SetOrigin()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -265,7 +264,9 @@ namespace GXPEngine
 			_bounds.x = -x;
 			_bounds.y = -y;
 		}
-		
+
+		public Vec2 GetOrigin() => new Vec2(-_bounds.x, -_bounds.y);
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Mirror
 		//------------------------------------------------------------------------------------------------------------------------
@@ -350,6 +351,16 @@ namespace GXPEngine
 		{
 			return MemberwiseClone();
 		}
-	}
+
+
+		//------------------------------------------------------------------------------------------------------------------------
+		//														Refresh()
+		//------------------------------------------------------------------------------------------------------------------------
+		public override void Refresh()
+        {
+			base.Refresh();
+			_texture = Texture2D.GetInstance(_texture,  true);
+		}
+    }
 }
 

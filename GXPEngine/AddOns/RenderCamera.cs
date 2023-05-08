@@ -6,7 +6,7 @@ namespace GXPEngine {
 	/// of what's rendered in that window.
 	/// (Don't forget to add this as child somewhere in the hierarchy.)
 	/// </summary>
-	public class Camera : GameObject {
+	public class RenderCamera : GameObject {
 		public Window RenderTarget {
 			get {
 				return _renderTarget;
@@ -24,7 +24,7 @@ namespace GXPEngine {
 		/// <param name="windowY">Top y coordinate of the render window.</param>
 		/// <param name="windowWidth">Width of the render window.</param>
 		/// <param name="windowHeight">Height of the render window.</param>
-		public Camera(int windowX, int windowY, int windowWidth, int windowHeight, bool clearBackground=true) {
+		public RenderCamera(int windowX, int windowY, int windowWidth, int windowHeight, bool clearBackground=true) {
 			_renderTarget = new Window (windowX, windowY, windowWidth, windowHeight, this, clearBackground);
 			game.OnAfterRender += _renderTarget.RenderWindow;
 		}
@@ -50,7 +50,7 @@ namespace GXPEngine {
 		/// <param name="screenX">The x coordinate of a point in screen space (like Input.mouseX) </param>
 		/// <param name="screenY">The y coordinate of a point in screen space (like Input.mouseY) </param>
 		/// <returns>Global space coordinates (to be used e.g. with HitTestPoint) </returns>
-		public Vector2 ScreenPointToGlobal(int screenX, int screenY) {
+		public Vec2 ScreenPointToGlobal(int screenX, int screenY) {
 			float camX = screenX - _renderTarget.centerX;
 			float camY = screenY - _renderTarget.centerY;
 			return TransformPoint(camX, camY);

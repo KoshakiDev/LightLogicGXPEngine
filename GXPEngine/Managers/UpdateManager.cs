@@ -4,17 +4,20 @@ using System.Collections.Generic;
 
 namespace GXPEngine.Managers
 {
-	public class UpdateManager
+	[Serializable] public class UpdateManager
 	{
 		private delegate void UpdateDelegate();
-        private delegate void FixedUpdateDelegate();
 
-        private float fixedTimeStep = 20;
+        private readonly float fixedTimeStep = 20;
 		private float timeSinceLastFixedUpdate;
+
+		private UpdateDelegate _awakeDelegates;
 		private UpdateDelegate _updateDelegates;
-		private Dictionary<GameObject, UpdateDelegate> _updateReferences = new Dictionary<GameObject, UpdateDelegate>();
-        private FixedUpdateDelegate _fixedUpdateDelegates;
-        private Dictionary<GameObject, FixedUpdateDelegate> _fixedUpdateReferences = new Dictionary<GameObject, FixedUpdateDelegate>();
+		private UpdateDelegate _fixedUpdateDelegates;
+
+		private readonly Dictionary<GameObject, UpdateDelegate> _awakeReferences = new Dictionary<GameObject, UpdateDelegate>();
+		private readonly Dictionary<GameObject, UpdateDelegate> _updateReferences = new Dictionary<GameObject, UpdateDelegate>();
+        private readonly Dictionary<GameObject, UpdateDelegate> _fixedUpdateReferences = new Dictionary<GameObject, UpdateDelegate>();
 
         //------------------------------------------------------------------------------------------------------------------------
         //														UpdateManager()
@@ -22,25 +25,25 @@ namespace GXPEngine.Managers
         public UpdateManager ()
 		{
 		}
+		//------------------------------------------------------------------------------------------------------------------------
+		//														Awake()
+		//------------------------------------------------------------------------------------------------------------------------
+		public void AwakeStep() => _awakeDelegates?.Invoke();
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Step()
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Step ()
 		{
-			if (_updateDelegates != null)
-			{
-                _updateDelegates();
-            }
-			/**/
-			if (_fixedUpdateDelegates == null)
+            _updateDelegates?.Invoke();
+            /**/
+            if (_fixedUpdateDelegates == null)
 				return;
 			timeSinceLastFixedUpdate += Time.deltaTime;	
 			while(timeSinceLastFixedUpdate >= fixedTimeStep)
 			{
-				if(_fixedUpdateDelegates != null)
-					_fixedUpdateDelegates();
-				timeSinceLastFixedUpdate -= fixedTimeStep;
+                _fixedUpdateDelegates?.Invoke();
+                timeSinceLastFixedUpdate -= fixedTimeStep;
 			}/**/
 		}
 
@@ -48,10 +51,20 @@ namespace GXPEngine.Managers
 		//														Add()
 		//------------------------------------------------------------------------------------------------------------------------
 		public void Add(GameObject gameObject) {
+			MethodInfo awakeInfo = gameObject.GetType().GetMethod("Awake", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+			if (awakeInfo != null)
+			{
+				UpdateDelegate onAwake = (UpdateDelegate)Delegate.CreateDelegate(typeof(UpdateDelegate), gameObject, awakeInfo, false);
+				if (onAwake != null && !_fixedUpdateReferences.ContainsKey(gameObject))
+				{
+					_awakeReferences[gameObject] = onAwake;
+					_awakeDelegates += onAwake;
+				}
+			}
 			MethodInfo fixedInfo = gameObject.GetType().GetMethod("FixedUpdate", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
             if (fixedInfo != null)
             {
-                FixedUpdateDelegate onFixedUpdate = (FixedUpdateDelegate)Delegate.CreateDelegate(typeof(FixedUpdateDelegate), gameObject, fixedInfo, false);
+                UpdateDelegate onFixedUpdate = (UpdateDelegate)Delegate.CreateDelegate(typeof(UpdateDelegate), gameObject, fixedInfo, false);
                 if (onFixedUpdate != null && !_fixedUpdateReferences.ContainsKey(gameObject))
                 {
                     _fixedUpdateReferences[gameObject] = onFixedUpdate;
@@ -88,56 +101,48 @@ namespace GXPEngine.Managers
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Contains()
 		//------------------------------------------------------------------------------------------------------------------------
-		public Boolean Contains (GameObject gameObject)
-		{
-			return _updateReferences.ContainsKey (gameObject) && _fixedUpdateReferences.ContainsKey(gameObject);
-		}
+		public bool Contains (GameObject gameObject) => _updateReferences.ContainsKey (gameObject) && _fixedUpdateReferences.ContainsKey(gameObject);
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Remove()
 		//------------------------------------------------------------------------------------------------------------------------
-		public void Remove(GameObject gameObject) {
-			if (_updateReferences.ContainsKey(gameObject)) {
-				UpdateDelegate onUpdate = _updateReferences[gameObject];
-				if (onUpdate != null) _updateDelegates -= onUpdate;			
-				_updateReferences.Remove(gameObject);
+		public void Remove(GameObject gameObject) 
+		{
+			(Dictionary<GameObject, UpdateDelegate> references, UpdateDelegate delegates)[] delegateInfo = 
+			{ 
+				(_awakeReferences, _awakeDelegates), 
+				(_updateReferences, _updateDelegates), 
+				(_fixedUpdateReferences, _fixedUpdateDelegates) 
+			};
+            for (int i = 0; i < delegateInfo.Length; i++)
+			{
+				if (delegateInfo[i].references.ContainsKey(gameObject))
+				{
+					UpdateDelegate onAwake = delegateInfo[i].references[gameObject];
+					if (onAwake != null) delegateInfo[i].delegates -= onAwake;
+					delegateInfo[i].references.Remove(gameObject);
+				}
 			}
-            if (_fixedUpdateReferences.ContainsKey(gameObject))
-            {
-                FixedUpdateDelegate onUpdate = _fixedUpdateReferences[gameObject];
-                if (onUpdate != null) _fixedUpdateDelegates -= onUpdate;
-                _fixedUpdateReferences.Remove(gameObject);
-            }
         }
 
 		public void Clear()
 		{
 			List<GameObject> gameObjects = new List<GameObject>();
-			foreach (GameObject gameObject in _updateReferences.Keys)
-				gameObjects.Add(gameObject);
-
-            foreach (GameObject gameObject in gameObjects)
-			{
-                Console.WriteLine("Removing: " + gameObject.GetType());
-                if (gameObject.GetType() != typeof(Setup))
-				{
-                    Remove(gameObject);
-                }
-
-			}
-			gameObjects.Clear();
-            foreach (GameObject gameObject in _fixedUpdateReferences.Keys)
-                gameObjects.Add(gameObject);
-
-            foreach (GameObject gameObject in gameObjects)
+			Dictionary<GameObject, UpdateDelegate>[] referencesStack = { _awakeReferences, _updateReferences, _fixedUpdateReferences };
+            foreach (Dictionary<GameObject, UpdateDelegate> references in referencesStack)
             {
-				Console.WriteLine("Removing: " + gameObject.GetType());
-                if (gameObject.GetType() != typeof(Setup))
-                {
-                    Remove(gameObject);
-                }
+				foreach (GameObject gameObject in references.Keys)
+					gameObjects.Add(gameObject);
 
-            }
+				foreach (GameObject gameObject in gameObjects)
+				{
+					Console.WriteLine("Removing: " + gameObject.GetType());
+					if (gameObject.GetType() != typeof(Setup))
+						Remove(gameObject);
+
+				}
+				gameObjects.Clear();
+			}
         }
 
 		public string GetDiagnostics() {

@@ -2,7 +2,7 @@ using System;
 
 namespace GXPEngine.Core
 {
-	public struct Rectangle
+	[Serializable] public struct Rectangle
 	{
 		public float x, y, width, height;
 		

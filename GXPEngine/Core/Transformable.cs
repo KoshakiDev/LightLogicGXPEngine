@@ -1,5 +1,4 @@
 using System;
-using GXPEngine.Core;
  
 
 namespace GXPEngine
@@ -7,7 +6,7 @@ namespace GXPEngine
 	/// <summary>
 	/// The Transformable class contains all positional data of GameObjects.
 	/// </summary>
-	public class Transformable
+	[Serializable] public class Transformable
 	{
 
 		protected float[] _matrix = new float[16] 
@@ -106,6 +105,11 @@ namespace GXPEngine
 			_matrix[12] = x;
 			_matrix[13] = y;
 		}
+		public virtual void SetXY(Vec2 pos)
+		{
+			_matrix[12] = pos.x;
+			_matrix[13] = pos.y;
+		}
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//													InverseTransformPoint()
@@ -173,8 +177,8 @@ namespace GXPEngine
 		/// <param name='y'>
 		/// The y coordinate.
 		/// </param>
-		public virtual Vector2 TransformPoint(float x, float y) {
-			Vector2 ret = new Vector2();
+		public virtual Vec2 TransformPoint(float x, float y) {
+			Vec2 ret = new Vec2();
 			ret.x = (_matrix[0] * x * _scaleX + _matrix[4] * y * _scaleY + _matrix[12]);
 			ret.y = (_matrix[1] * x * _scaleX + _matrix[5] * y * _scaleY + _matrix[13]);
 			return ret;
@@ -184,8 +188,8 @@ namespace GXPEngine
 		/// Transforms a direction vector (x,y) from this object's local space to the game's global space. 
 		/// This means that rotation and scaling is applied, but translation is not.
 		/// </summary>
-		public virtual Vector2 TransformDirection(float x, float y) {
-			Vector2 ret = new Vector2();
+		public virtual Vec2 TransformDirection(float x, float y) {
+			Vec2 ret = new Vec2();
 			ret.x = (_matrix[0] * x * _scaleX + _matrix[4] * y * _scaleY);
 			ret.y = (_matrix[1] * x * _scaleX + _matrix[5] * y * _scaleY);
 			return ret;
@@ -334,13 +338,13 @@ namespace GXPEngine
 		/// <value>
 		/// The scale.
 		/// </value>
-		public float scale {
+		public Vec2 scale {
 			get { 
-				return _scaleX; 
+				return new Vec2(scaleX, scaleY); 
 			}
 			set { 
-				_scaleX = value;
-				_scaleY = value; 
+				_scaleX = value.x;
+				_scaleY = value.y; 
 			}
 		}
 

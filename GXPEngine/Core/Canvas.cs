@@ -8,9 +8,9 @@ namespace GXPEngine
 	/// <summary>
 	/// The Canvas object can be used for drawing 2D visuals at runtime.
 	/// </summary>
-	public class Canvas : Sprite
+	[Serializable] public class Canvas : Sprite
 	{
-		protected Graphics _graphics;
+		[NonSerialized] protected Graphics _graphics;
 		protected bool _invalidate = false;
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -28,18 +28,18 @@ namespace GXPEngine
 		/// <param name='height'>
 		/// Height of the canvas in pixels.
 		/// </param>
-		public Canvas (int width, int height, bool addCollider=true) : this(new Bitmap (width, height), addCollider)
+		public Canvas (int width, int height, string layerMask = "noMask") : this(new Bitmap (width, height), layerMask: layerMask)
 		{
 			name = width + "x" + height;
 		}
 
-		public Canvas (System.Drawing.Bitmap bitmap, bool addCollider=true) : base (bitmap,addCollider)
+		public Canvas (Bitmap bitmap, string layerMask = "noMask") : base (bitmap, layerMask: layerMask)
 		{
 			_graphics = Graphics.FromImage(bitmap);
 			_invalidate = true;
 		}
 
-		public Canvas(string filename, bool addCollider=true):base(filename, false, addCollider)
+		public Canvas(string filename, string layerMask = "noMask") : base(filename, false, layerMask: layerMask)
 		{
 			_graphics = Graphics.FromImage(texture.bitmap);
 			_invalidate = true;
@@ -86,7 +86,7 @@ namespace GXPEngine
 		public void DrawSprite(Sprite sprite) {
 			float wd = sprite.texture.width;
 			float ht = sprite.texture.height;
-			Vector2[] corners = sprite.GetExtents();
+			Vec2[] corners = sprite.GetExtents();
 			destPoints[0] = new PointF(corners[0].x, corners[0].y);
 			destPoints[1] = new PointF(corners[1].x, corners[1].y);
 			destPoints[2] = new PointF(corners[3].x, corners[3].y);
@@ -101,7 +101,7 @@ namespace GXPEngine
 
 		// Called by the garbage collector
 		~Canvas() {
-			_graphics.Dispose();
+			_graphics?.Dispose();
 		}
 	}
 }

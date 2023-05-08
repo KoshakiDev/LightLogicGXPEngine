@@ -1,7 +1,4 @@
-﻿using System;
-using GXPEngine.Core;
-
-namespace GXPEngine
+﻿namespace GXPEngine
 {
 	/**
 	 * Simple MouseHandler interface between the Input class and your own code, that turns the Input.mouseX Input.mouseY
@@ -56,7 +53,7 @@ namespace GXPEngine
 		//position.Set (Input.mouseX, Input.mouseY);
 		//you can do
 		//position.Set (Input.mouseX + _mouseHandler.offsetToTarget.x, Input.mouseY + _mouseHandler.offsetToTarget.y);
-		private Vector2 _offset = new Vector2();
+		private Vec2 _offset = new Vec2();
 
 		/// <summary>
 		/// Create a new MouseHandler for the given target.
@@ -77,7 +74,11 @@ namespace GXPEngine
 		void HandleOnStep ()
 		{
 			//mouse can enter/leave target without moving (the target may move!)
-			bool isOnTarget = _target.HitTestPoint (Input.mouseX, Input.mouseY);
+			if (_target.Collider is null)
+				return;
+
+			Physics.Collision.Check(_target.Collider, new Vec2(Input.mouseX, Input.mouseY), out CollisionData collisionData);
+			bool isOnTarget = !collisionData.isEmpty;
 			if (isOnTarget  && !_wasOnTarget) {
 				if (OnMouseOverTarget != null) OnMouseOverTarget (_target, MouseEventType.MouseOverTarget);
 			} else if (!isOnTarget  && _wasOnTarget) {
@@ -116,17 +117,14 @@ namespace GXPEngine
 		}
 
 		//contains offset from mouse to target on click
-		public Vector2 offsetToTarget {
+		public Vec2 offsetToTarget {
 			get { return _offset;}
 		}
 
 		~MouseHandler()
 		{
 			_game.OnAfterStep -= HandleOnStep;
-
 		}
-
-
 	}
 
 	public enum MouseEventType {

@@ -1,6 +1,7 @@
-using System;
 using GXPEngine.Core;
 using GXPEngine.Managers;
+using GXPEngine.PhysicsCore;
+using System;
 
 namespace GXPEngine
 {
@@ -8,19 +9,20 @@ namespace GXPEngine
 	/// The Game class represents the Game window.
 	/// Only a single instance of this class is allowed.
 	/// </summary>
-	public class Game : GameObject
+	[Serializable] public class Game : GameObject
 	{
 		internal static Game main = null;
 
 		private GLContext _glContext;
 
-		private UpdateManager _updateManager;
-		private CollisionManager _collisionManager;
+
+
+		public UpdateManager UpdateManager { get; private set; }
 
 		/// <summary>
 		/// Step delegate defines the signature of a method used for step callbacks, see OnBeforeStep, OnAfterStep.
 		/// </summary>
-		public delegate void StepDelegate ();
+		public delegate void StepDelegate();
 		/// <summary>
 		/// Occurs before the engine starts the new update loop. This allows you to define general manager classes that can update itself on/after each frame.
 		/// </summary>
@@ -99,15 +101,12 @@ namespace GXPEngine
 			PixelArt = pPixelArt;
 
 			if (PixelArt) {
-				// offset should be smaller than 1/(2 * "pixelsize"), but not zero:
 				x = 0.001f;
 				y = 0.001f;
-			}
-			
+			}		
 
 			main = this;
-			_updateManager = new UpdateManager ();
-			_collisionManager = new CollisionManager ();
+			UpdateManager = new UpdateManager ();
 
 			if (Settings.GLContext == null)
 			{
@@ -122,8 +121,7 @@ namespace GXPEngine
 			}
 
 			_renderRange = new Rectangle (0, 0, pWidth, pHeight);
-
-			//register ourselves for updates
+			OnBeforeStep += AwakeStep;
 			Add (this);
 		}
 
@@ -165,10 +163,7 @@ namespace GXPEngine
 		/// Set this to 'true' to enable the cursor.
 		/// Else, set this to 'false'.
 		/// </param>
-		public void ShowMouse (bool enable)
-		{
-			_glContext.ShowCursor(enable);
-		}
+		public void ShowMouse (bool enable) => _glContext.ShowCursor(enable);	
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Start()
@@ -176,33 +171,34 @@ namespace GXPEngine
 		/// <summary>
 		/// Start the game loop. Call this once at the start of your game.
 		/// </summary>
-		public void Start() 
-		{
-			_glContext.Run();
-		}
+		public void Start() => _glContext.Run();
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Step()
 		//------------------------------------------------------------------------------------------------------------------------
+		internal void AwakeStep()
+        {
+			UpdateManager.AwakeStep();
+			OnBeforeStep -= AwakeStep;
+        }
+
 		internal void Step()
 		{
-			if (OnBeforeStep != null)
-				OnBeforeStep ();
-			_updateManager.Step ();
-			_collisionManager.Step ();
-			if (OnAfterStep != null)
-				OnAfterStep ();
-		}
+            OnBeforeStep?.Invoke();
+            UpdateManager.Step();
+			Physics.Step();
+            OnAfterStep?.Invoke();
+        }
 
 		bool recurse = true;
 
 		public override void Render(GLContext glContext) {
-			if (RenderMain || !recurse) {
+			if (RenderMain || !recurse) 
 				base.Render (glContext);
-			}
-			if (OnAfterRender != null && recurse) {
+			if (OnAfterRender != null && recurse)
+			{
 				recurse = false;
-				OnAfterRender (glContext);
+				OnAfterRender(glContext);
 				recurse = true;
 			}
 		}
@@ -220,12 +216,10 @@ namespace GXPEngine
 		/// <summary>
 		/// Should only be called from the GameObject class!
 		/// </summary>
-		internal void Add (GameObject gameObject)
+		internal void Add(GameObject gameObject)
 		{
-			_updateManager.Add (gameObject);
-			_collisionManager.Add (gameObject);
+			UpdateManager.Add(gameObject);
 		}
-		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Remove()
 		//------------------------------------------------------------------------------------------------------------------------
@@ -234,8 +228,7 @@ namespace GXPEngine
 		/// </summary>
 		internal void Remove (GameObject gameObject)
 		{
-			_updateManager.Remove (gameObject);
-			_collisionManager.Remove (gameObject);
+			UpdateManager.Remove (gameObject);
 		}
 
 		//------------------------------------------------------------------------------------------------------------------------
@@ -246,27 +239,16 @@ namespace GXPEngine
 		/// </summary>
 		internal void Clear()
 		{
-			_updateManager.Clear();
-			_collisionManager.Clear();
+			UpdateManager.Clear();
 		}
-		//------------------------------------------------------------------------------------------------------------------------
-		//														GetGameObjectCollisions()
-		//------------------------------------------------------------------------------------------------------------------------
-		internal GameObject[] GetGameObjectCollisions (GameObject gameObject, bool includeTriggers = true, bool includeSolid = true)
-		{
-			return _collisionManager.GetCurrentCollisions(gameObject, includeTriggers, includeSolid);
-		}
-
-
 		//------------------------------------------------------------------------------------------------------------------------
 		//														width
 		//------------------------------------------------------------------------------------------------------------------------
 		/// <summary>
 		/// Returns the width of the window.
 		/// </summary>
-		public int width {
-			get { return _glContext.Width; }
-		}
+		public int width => _glContext.Width; 
+		
 		
 		//------------------------------------------------------------------------------------------------------------------------
 		//														height
@@ -274,9 +256,7 @@ namespace GXPEngine
 		/// <summary>
 		/// Returns the height of the window.
 		/// </summary>
-		public int height {
-			get { return _glContext.Height; }
-		}
+		public int height => _glContext.Height;
 
 		//------------------------------------------------------------------------------------------------------------------------
 		//														Destroy()
@@ -297,6 +277,8 @@ namespace GXPEngine
 		/// </summary>
 		public void Exit()
 		{
+			Physics.Stop();
+
 			base.Destroy();
 			_glContext.Close();
 			_glContext.Exit();
@@ -340,8 +322,7 @@ namespace GXPEngine
 			output += "OnAfterStep delegates: "+(OnAfterStep==null?0:OnAfterStep.GetInvocationList().Length)+'\n';
 			output += "OnAfterRender delegates: "+(OnAfterRender==null?0:OnAfterRender.GetInvocationList().Length)+'\n';
 			output += Texture2D.GetDiagnostics ();
-			output += _collisionManager.GetDiagnostics (); 
-			output += _updateManager.GetDiagnostics (); 
+			output += UpdateManager.GetDiagnostics (); 
 			return output;
 		}
 

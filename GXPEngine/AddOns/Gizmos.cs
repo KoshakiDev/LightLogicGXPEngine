@@ -94,8 +94,8 @@ namespace GXPEngine {
 				Instance.drawCalls.Add(new DrawLineCall(x1, y1, x2, y2, color, width));
 			} else {
 				// transform to the given parent space:
-				Vector2 start = space.TransformPoint(x1, y1);
-				Vector2 end = space.TransformPoint(x2, y2);
+				Vec2 start = space.TransformPoint(x1, y1);
+				Vec2 end = space.TransformPoint(x2, y2);
 
 				Instance.drawCalls.Add(new DrawLineCall(start.x, start.y, end.x, end.y, color, width));
 			}
