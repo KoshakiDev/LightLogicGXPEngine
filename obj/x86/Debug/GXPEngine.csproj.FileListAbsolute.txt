@@ -92,3 +92,9 @@ C:\Users\Kyrylo\Desktop\Projects\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngi
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.exe
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.pdb
+C:\Users\Kyrylo\Desktop\Projects\SaxionFinalApproach\GXPEngine\bin\Debug\GXPEngine.exe
+C:\Users\Kyrylo\Desktop\Projects\SaxionFinalApproach\GXPEngine\bin\Debug\GXPEngine.pdb
+C:\Users\Kyrylo\Desktop\Projects\SaxionFinalApproach\GXPEngine\obj\x86\Debug\GXPEngine.csproj.AssemblyReference.cache
+C:\Users\Kyrylo\Desktop\Projects\SaxionFinalApproach\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
+C:\Users\Kyrylo\Desktop\Projects\SaxionFinalApproach\GXPEngine\obj\x86\Debug\GXPEngine.exe
+C:\Users\Kyrylo\Desktop\Projects\SaxionFinalApproach\GXPEngine\obj\x86\Debug\GXPEngine.pdb
