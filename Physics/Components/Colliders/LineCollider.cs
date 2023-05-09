@@ -13,5 +13,20 @@ using System;
         LineStart = args.Length > 2 ? new Vec2(float.Parse(args[1]), float.Parse(args[2])) : Vec2.Zero;
         LineEnd = args.Length > 4 ? new Vec2(float.Parse(args[3]), float.Parse(args[4])) : Vec2.Up;
     }
+
+    public Vec2 TransformedStart()
+    {
+        Vec2 origin = new Vec2(Owner.x, Owner.y);
+        Vec2 transformedStart = LineStart * Owner.scale + origin;
+        transformedStart.RotateAroundDegrees(Owner.rotation, origin);
+        return transformedStart;
+    }
+    public Vec2 TransformedEnd()
+    {
+        Vec2 origin = new Vec2(Owner.x, Owner.y);
+        Vec2 transformedEnd = LineEnd * Owner.scale + origin;
+        transformedEnd.RotateAroundDegrees(Owner.rotation, origin);
+        return transformedEnd;
+    }
 }
 
