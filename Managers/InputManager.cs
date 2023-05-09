@@ -31,8 +31,8 @@ public static class InputManager
         if (Input.GetKey(Key.D) && Input.GetKeyDown(Key.LEFT_CTRL)) Debug.Log(Settings.Setup.GetDiagnostics());
         if (Input.GetKey(Key.A) && Input.GetKeyDown(Key.LEFT_CTRL)) OnAddCombination?.Invoke();
 
-        if (Input.GetKey(Key.UP)) OnUpButtonPressed?.Invoke();
-        if (Input.GetKey(Key.DOWN)) OnDownButtonPressed?.Invoke();
+        if (Input.GetKey(Key.DOWN)) OnUpButtonPressed?.Invoke();
+        if (Input.GetKey(Key.UP)) OnDownButtonPressed?.Invoke();
         if (Input.GetKey(Key.LEFT)) OnLeftButtonPressed?.Invoke();
         if (Input.GetKey(Key.RIGHT)) OnRightButtonPressed?.Invoke();
         if (Input.GetKeyDown(Key.SPACE)) OnSpaceButtonPressed?.Invoke();
