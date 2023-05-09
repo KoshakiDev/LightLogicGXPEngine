@@ -147,6 +147,16 @@ public static class Settings
         }
     }
 
+    private static float _raycastStep;
+    public static float RaycastStep
+    {
+        get => _raycastStep;
+        set
+        {
+            if (EditMode)
+                _raycastStep = value;
+        }
+    }
     private static void CreateDebugDraw()
     {
         ColliderDebug = new EasyDraw(Setup.width, Setup.height);

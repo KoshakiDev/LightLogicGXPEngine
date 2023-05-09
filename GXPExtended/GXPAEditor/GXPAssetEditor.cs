@@ -284,14 +284,8 @@ public static class GXPAssetEditor
 
     public static void Start(string filename)
     {
-        try
-        {
-            EditorFont = Utils.LoadFont(Settings.AssetsPath + "DOS.ttf", 12);
-        }
-        catch
-        {
-            EditorFont = EasyDraw.DefaultFont;
-        }
+        try{EditorFont = Utils.LoadFont(Settings.AssetsPath + "DOS.ttf", 12);}
+        catch{EditorFont = EasyDraw.DefaultFont;}
         Settings.CreateEditorDebugDraw();
         GameObject documentObject = AssetManager.LoadAsset(filename, fullname: true);
         Setup.MainLayer.AddChild(documentObject);
@@ -354,12 +348,36 @@ public static class GXPAssetEditor
 
                 Selection.DocumentObject.AddChild(loadedAsset);
                 TryOutliningGameObject(loadedAsset, false);
+                loadedAsset.SetXY(0, 0);
+                loadedAsset.SetScaleXY(1, 1);
+                loadedAsset.rotation = 0;
 
                 Debug.Log(">> Imported GXP Asset import : " + FileDialog.FileName);
             }
         }
 
         ResetCamera();
+    }
+    private static void ChangeTexture()
+    {
+        if(Selection.SelectedGameObject is null || Selection.SelectedGameObject.GetType() != typeof(Sprite))
+            return;
+
+        Debug.Log(">> Started GXP Asset texture change");
+
+        using (OpenFileDialog FileDialog = new OpenFileDialog())
+        {
+            FileDialog.InitialDirectory = Settings.AssetsPath;
+            FileDialog.Filter = "Images (*.png)|*.png";
+            FileDialog.RestoreDirectory = true;
+
+            if (FileDialog.ShowDialog() == DialogResult.OK)
+            {
+                (Selection.SelectedGameObject as Sprite).ResetParameters(true, FileDialog.FileName);
+
+                Debug.Log(">> Changed texture of GXP Asset : " + FileDialog.FileName);
+            }
+        }
     }
     private static void Save()
     {
@@ -420,7 +438,7 @@ public static class GXPAssetEditor
             if (gameObject != Selection.SelectedGameObject && gameObject is Sprite sprite && sprite.HitTest(mousePosition))
                 currentGameObject = gameObject;
         }
-        if (currentGameObject == null)
+        if (currentGameObject == null && Input.GetMouseButton(1))
         {
             prevGameObject = null;
             currentGameObject = Selection.DocumentObject;

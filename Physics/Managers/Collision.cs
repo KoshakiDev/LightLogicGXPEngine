@@ -244,10 +244,10 @@ namespace GXPEngine.PhysicsCore
 
             return isExpedient;
         }
-        private bool ValidateExpediency(Vec2 point, Collider other)
+        private bool ValidateExpediency(Vec2 point, Collider other, float activeRadius = 5)
         {
             other.Owner.TryGetComponent(typeof(Rigidbody), out Component otherComponent);
-            float otherPredictedActiveRadius = other.ActiveRadius + 5 + (otherComponent is null ? 0 : (otherComponent as Rigidbody).ActualVelocity.length);
+            float otherPredictedActiveRadius = other.ActiveRadius + activeRadius + (otherComponent is null ? 0 : (otherComponent as Rigidbody).ActualVelocity.length);
             return Vec2.Distance(point, other.TransformedLogicalCenterOfMass) < otherPredictedActiveRadius;
         }
 
@@ -678,57 +678,73 @@ namespace GXPEngine.PhysicsCore
             }
             return collision;
         }
-        private bool LineLine(Vec2 start1, Vec2 end1, Vec2 start2, Vec2 end2, out Vec2 intersectionPoint)
+        private bool LineLine(Vec2 start1, Vec2 end1, Vec2 start2, Vec2 end2, out Vec2 collisionPoint)
         {
-            intersectionPoint = Vec2.Zero;
+            collisionPoint = Vec2.Zero;
 
-            float divider = (end2.y - start2.y) * (end1.x - start1.x) - (end2.x - start2.x) * (end1.y - start1.y);
-            if (divider == 0) return false;
+            Vec2 dir1 = end1 - start1;
+            Vec2 dir2 = end2 - start2;
 
-            float uA = ((end2.x - start2.x) * (start1.y - start2.y) - (end2.y - start2.y) * (start1.x - start2.x)) / divider;
-            float uB = ((end1.x - start1.x) * (start1.y - start2.y) - (end1.y - end2.y) * (start1.x - start2.x)) / divider;
+            float a1 = -dir1.y;
+            float b1 = +dir1.x;
+            float d1 = -(a1 * start1.x + b1 * start1.y);
 
-            if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1)
+            float a2 = -dir2.y;
+            float b2 = +dir2.x;
+            float d2 = -(a2 * start2.x + b2 * start2.y);
+
+            float seg1_line2_start = a2 * start1.x + b2 * start1.y + d2;
+            float seg1_line2_end = a2 * end1.x + b2 * end1.y + d2;
+
+            float seg2_line1_start = a1 * start2.x + b1 * start2.y + d1;
+            float seg2_line1_end = a1 * end2.x + b1 * end2.y + d1;
+
+            if (seg1_line2_start * seg1_line2_end > 0 || seg2_line1_start * seg2_line1_end > 0)
             {
-                intersectionPoint.x = start1.x + uA * (end1.x - start1.x);
-                intersectionPoint.y = start1.y + uA * (end1.y - start1.y);
-                return true;
+                return false;
             }
 
-            return false;
+            float u = seg1_line2_start / (seg1_line2_start - seg1_line2_end);
+
+            collisionPoint = start1 + u * dir1;
+
+            return true;
         }
         private float CircleTOI(Vec2 oldPosition, float radius, Vec2 newPosition)
         {
             return Mathf.Abs(radius - oldPosition.length) / newPosition.length + radius;
         }
 
-        public void Raycast(Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData[] collisionDatas, string layerMask = "noMaskAtAll")
+        public bool Raycast(Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData, string layerMask = "Default")
         {
-            collisionDatas = null;
             Vec2 end = start + direction * step;
-            List<CollisionData> collisionList = new List<CollisionData>();
-            CollisionData collisionData;
-            while (Vec2.Distance(start, end) < maxDistance && collisionList.Count == 0) 
+            collisionData = new CollisionData(null, null, 0, new Vec2[] { start + direction * maxDistance }, Vec2.Zero, false);
+            CollisionData collisionDataBuffer;
+            float minDistance = float.MaxValue;
+            bool found = false;
+            while (Vec2.Distance(start, end) < maxDistance) 
             {
-                Collider[] colliders = new Collider[Physics.Colliders.Count];
-                Physics.Colliders.CopyTo(colliders);
-                foreach (Collider other in colliders)
+                foreach (Collider other in Physics.Colliders)
                 {
                     if (!other.Owner.CompareLayerMask(layerMask)) continue;
-                    if (!ValidateExpediency(end, other)) continue;
-                    if (other is PolygonCollider poly) 
-                        collisionData = polygonLine(poly, start, end);
-                    else collisionData = CollisionData.Empty;
-                    if (collisionData.isEmpty) continue;
-                    Physics.OnCollision(collisionData);
-                    collisionList.Add(collisionData);
+                    if (!ValidateExpediency(end, other, 30)) continue;
+                    if (other is PolygonCollider poly)
+                        collisionDataBuffer = polygonLine(poly, start, end);
+                    else collisionDataBuffer = CollisionData.Empty;
+                    if (collisionDataBuffer.isEmpty) continue;
+                    float distance = Vec2.Distance(start, collisionDataBuffer.AverageCollisionPoint());
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        collisionData = collisionDataBuffer;
+                        found = true;
+                    }
                 }
-                collisionDatas = collisionList.ToArray();
+                if (found)
+                    return true;
                 end += direction * step;
-
-                if(Settings.CollisionDebug)
-                    Settings.ColliderDebug.Line(start.x, start.y, end.x, end.y);
             }
+            return false;
 
             CollisionData polygonLine(PolygonCollider self, Vec2 a, Vec2 b)
             {
@@ -747,7 +763,7 @@ namespace GXPEngine.PhysicsCore
                     Vec2 segmentStart = self.TransformedPoints[current];
                     Vec2 segmentEnd = self.TransformedPoints[next];
 
-                    if (LineLine(a, b, segmentStart, segmentEnd, out Vec2 point))
+                    if (LineLine(a, b,segmentEnd, segmentStart, out Vec2 point))
                     {
                         hasCollision = true;
                         float distance = Vec2.Distance(a, point);
@@ -761,7 +777,7 @@ namespace GXPEngine.PhysicsCore
                     }
                 }
                 if (hasCollision)
-                    return new CollisionData(self.Owner, null, 0, new Vec2[] { collisionPoint }, collisionNormal, false);
+                    return new CollisionData(self.Owner, null, 0, new Vec2[] { collisionPoint }, collisionNormal, true);
 
                 return CollisionData.Empty;
             }

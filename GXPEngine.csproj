@@ -66,6 +66,7 @@
     <Compile Include="Physics\Components\Colliders\CircleCollider.cs" />
     <Compile Include="Physics\Components\Colliders\Collider.cs" />
     <Compile Include="Physics\Components\Colliders\PolygonCollider.cs" />
+    <Compile Include="Physics\Components\LightCaster.cs" />
     <Compile Include="Physics\Components\Movable.cs" />
     <Compile Include="Physics\Managers\Collision.cs" />
     <Compile Include="Physics\Components\Colliders\CollisionData.cs" />
