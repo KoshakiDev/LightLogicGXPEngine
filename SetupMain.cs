@@ -23,9 +23,10 @@ using System;
             Settings.ReadParameters();
             Settings.Volume = 0.8f;
             Settings.Fullscreen = false;
-            Settings.CollisionDebug = false;
+            Settings.CollisionDebug = true;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
+            Settings.RaycastStep = 30;
         }
         void subscriptions()
         {
@@ -195,9 +196,15 @@ using System;
         Sprite level = new Sprite("Empty");
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("physicsTestLevel"));
+        level.AddChild(AssetManager.LoadAsset("raycastTestLevel"));
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
+
+        player.AddComponent(typeof(LightCaster), args: new string[] 
+        { 
+            "Default",
+            "Walls",
+        });
         level.AddChild(player);
 
         Sprite movableBlock = AssetManager.LoadAsset("mouseMovableRectangle") as Sprite;

@@ -101,6 +101,15 @@ namespace GXPEngine
 			initializeFromTexture(Texture2D.GetInstance(Settings.AssetsPath + filename + extension, keepInCache));
 		}
 
+		public void ResetParameters(bool full, string filename, bool keepInCache = false, ImageExtension imageExtension = ImageExtension.PNG)
+		{
+			base.ResetParameters();
+			if (Game.main == null)
+				throw new Exception("Sprites cannot be created before creating a Game instance.");
+
+			initializeFromTexture(Texture2D.GetInstance(filename, keepInCache));
+		}
+
 		//------------------------------------------------------------------------------------------------------------------------
 		//														initializeFromTexture()
 		//------------------------------------------------------------------------------------------------------------------------
