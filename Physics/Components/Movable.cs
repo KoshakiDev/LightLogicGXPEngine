@@ -1,5 +1,6 @@
 ﻿using GXPEngine;
 using System;
+using System.Windows.Forms.VisualStyles;
 
 [Serializable]
 public class Movable: Component, IRefreshable
@@ -35,37 +36,20 @@ public class Movable: Component, IRefreshable
         base.Update();
         if (!isSelected)
             return;
-        if (!MovementLock)
-            MoveTowardsMouse();
-        
     }
-    void MoveTowardsMouse()
+    void OnMouseMoved()
     {
-        if (Owner.Rigidbody is null) return;
-
-        Vec2 mousePosition = new Vec2(Input.mouseX, Input.mouseY);
-
+        if (MovementLock) return;
         
-        Vec2 pointOnLine = new Vec2(
-            Mathf.Clamp(mousePosition.x, relativePoint1.x, relativePoint2.x),
-            Mathf.Clamp(mousePosition.y, relativePoint1.y, relativePoint2.y)
-        );
+        Vec2 mousePosition = Input.mouseWorldPosition;
 
-        Debug.Log("Point On Line: " + pointOnLine + " with Mouse Position of " + mousePosition + " and owner position of " + Owner.position);
+        Vec2 pointOnLine = Vec2.ClampPoint(mousePosition, relativePoint1, relativePoint2);
 
+        Owner.SetXY(pointOnLine);
+    }
 
-        if (pointOnLine == Owner.position)
-        {
-            Debug.Log("Destination Reached");
-            return;
-        }    
-
-        Vec2 directionToPoint = (pointOnLine - Owner.position).normalized;
-
-        //Debug.Log("Direction to point: " + directionToPoint);
-
-        Owner.position.SetXY(pointOnLine.x, pointOnLine.y);
-        /**/
+    void RotateWithMouse()
+    {
 
     }
     void ChangeSelection()
@@ -97,6 +81,7 @@ public class Movable: Component, IRefreshable
             //return;
 
         Debug.Log(">> Selected : " + Owner.name);
+        SubscribeToInputWhenSelected();
 
         //TryOutliningGameObject(Selection.SelectedGameObject, true);
         //Selection.SelectionBoxSetVisible(true);
@@ -107,7 +92,7 @@ public class Movable: Component, IRefreshable
             //return;
 
         Debug.Log(">> Deselected : " + Owner.name);
-
+        UnsubscribeFromInputWhenUnselected();
         //TryOutliningGameObject(Selection.SelectedGameObject, false);
         //Selection.SelectionBoxSetVisible(false);
     }
@@ -123,6 +108,24 @@ public class Movable: Component, IRefreshable
         InputManager.OnRightMousePressed -= ChangeSelection;
     }
 
+    void SubscribeToInputWhenSelected()
+    {
+        InputManager.OnMouseMoved += OnMouseMoved;
+    }
+
+    void UnsubscribeFromInputWhenUnselected()
+    {
+        InputManager.OnMouseMoved -= OnMouseMoved;
+    }
 
 
 }
+
+/*
+using UnityEngine;
+ 
+ public static class VectorUtil
+ {
+     
+ }
+*/

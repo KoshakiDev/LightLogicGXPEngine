@@ -109,5 +109,27 @@ using System.Collections.Generic;
         hashCode = hashCode * -1521134295 + normal.GetHashCode();
         return hashCode;
     }
+    
+    //Added by Zhangir
+    public static Vec2 ClampPoint(Vec2 point, Vec2 segmentStart, Vec2 segmentEnd)
+    {
+        return ClampProjection(ProjectPoint(point, segmentStart, segmentEnd), segmentStart, segmentEnd);
+    }
+
+    public static Vec2 ProjectPoint(Vec2 point, Vec2 segmentStart, Vec2 segmentEnd)
+    {
+        return segmentStart + Vec2.Dot(point - segmentStart, segmentEnd - segmentStart);
+    }
+
+    private static Vec2 ClampProjection(Vec2 point, Vec2 start, Vec2 end)
+    {
+        var toStart = (point - start).lengthSquared;
+        var toEnd = (point - end).lengthSquared;
+        var segment = (start - end).lengthSquared;
+        if (toStart > segment || toEnd > segment) return toStart > toEnd ? end : start;
+        return point;
+    }
     #endregion
+
+
 }

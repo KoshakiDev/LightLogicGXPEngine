@@ -110,5 +110,21 @@ namespace GXPEngine
 		public static int mouseY {
 			get { return GLContext.mouseY; }
 		}
+
+		public static Vec2 mouseScreenPosition
+		{
+			get
+			{
+				return new Vec2(Input.mouseX, Input.mouseY);
+			}
+		}
+		public static Vec2 mouseWorldPosition
+		{
+			get 
+			{
+                //TODO: Ask Kiril why I should multiply the camera position by -1
+                return Input.mouseScreenPosition + (-1 * Camera.Position);
+            }
+		}
 	}
 }

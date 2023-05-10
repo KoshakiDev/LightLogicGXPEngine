@@ -196,7 +196,8 @@ using System;
         Sprite level = new Sprite("Empty");
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("raycastTestLevel"));
+        level.AddChild(AssetManager.LoadAsset("movableTestLevel"));
+        //level.AddChild(AssetManager.LoadAsset("raycastTestLevel"));
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
 
@@ -207,8 +208,6 @@ using System;
         });
         level.AddChild(player);
 
-        Sprite movableBlock = AssetManager.LoadAsset("mouseMovableRectangle") as Sprite;
-        level.AddChild(movableBlock);
         #endregion
 
         Camera.SetLevel(level);
