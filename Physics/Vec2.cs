@@ -17,6 +17,7 @@ using System.Collections.Generic;
     public Vec2 normal => new Vec2(-y, x).normalized;
     public Vec2 inverted => new Vec2(-x, -y);
     public Vec2 Abs => new Vec2(Mathf.Abs(x), Mathf.Abs(y));
+    public Vec2 squared => new Vec2(Mathf.Sqrt(x), Mathf.Sqrt(y));
     #endregion
 
     #region Constructor
@@ -74,7 +75,8 @@ using System.Collections.Generic;
     public void Normalize() => this = length == 0? this : this * Mathf.Pow(length, -1);
     public static Vec2 Lerp(Vec2 origin, Vec2 destination, float factor) => ((1 - factor) * origin) + (factor * destination);
     public static float Cross(Vec2 a, Vec2 b) => (a.x * b.normalized.y) - (a.y * b.normalized.x);
-    public static float Dot(Vec2 a, Vec2 b) => (a.x * b.normalized.x) + (a.y * b.normalized.y);
+    public static float DotSecondNormalized(Vec2 a, Vec2 b) => (a.x * b.normalized.x) + (a.y * b.normalized.y);
+    public static float Dot(Vec2 a, Vec2 b) => (a.x * b.x) + (a.y * b.y);
     public static float Distance(Vec2 a, Vec2 b) => Mathf.Sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
     public override string ToString() => $"( {x} ; {y} )";
     public override bool Equals(object obj) => 
@@ -118,7 +120,7 @@ using System.Collections.Generic;
 
     public static Vec2 ProjectPoint(Vec2 point, Vec2 segmentStart, Vec2 segmentEnd)
     {
-        return segmentStart + Vec2.Dot(point - segmentStart, segmentEnd - segmentStart);
+        return segmentStart + Vec2.DotSecondNormalized(point - segmentStart, segmentEnd - segmentStart);
     }
 
     private static Vec2 ClampProjection(Vec2 point, Vec2 start, Vec2 end)

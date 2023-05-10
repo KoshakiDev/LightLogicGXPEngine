@@ -11,9 +11,6 @@ using System;
 
     [STAThread] private static void Main() => new Setup();
     
-    /*
-    Screen size was edited because debug
-    */
     public Setup() : base(1280, 720, false, pPixelArt: false, pRealWidth: Settings.Screen.Width, pRealHeight: Settings.Screen.Height)
     {
         void settings()
@@ -26,7 +23,7 @@ using System;
             Settings.CollisionDebug = true;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
-            Settings.RaycastStep = 30;
+            Settings.RaycastStep = 10;
         }
         void subscriptions()
         {
@@ -107,7 +104,7 @@ using System;
 
             myVec = new Vec2(2, 3);
             other = new Vec2(-5, 2);
-            float floatResult = Vec2.Dot(myVec, other);
+            float floatResult = Vec2.DotSecondNormalized(myVec, other);
             Debug.Log("Dot product ok ?: " +
                 (floatResult == -4 && myVec.x == 2 && myVec.y == 3 && other.x == -5 && other.y == 2));
 
@@ -143,8 +140,6 @@ using System;
         AddChild(GUI = new Sprite("Empty"));
         #endregion
 
-        /*
-        
         #region Post-processing
         PostProcessing.AddChildren(new GameObject[]
         {
@@ -152,8 +147,6 @@ using System;
             AssetManager.LoadAsset("screenEffect_Add")
         });
         #endregion
-
-        */
 
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
@@ -197,10 +190,9 @@ using System;
         MainLayer.AddChild(level);
 
         level.AddChild(AssetManager.LoadAsset("movableTestLevel"));
-        //level.AddChild(AssetManager.LoadAsset("raycastTestLevel"));
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
-
+        player.SetLayerMask("Creature");
         player.AddComponent(typeof(LightCaster), args: new string[] 
         { 
             "Default",

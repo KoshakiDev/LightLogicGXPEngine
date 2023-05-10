@@ -13,7 +13,7 @@ public class LightCaster: Component
     {
         base.Update();
 
-        Owner.rotation += 0.01f;
+        int iterationCount = 0;
         bool result = true;
         Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
         Vec2 startPosition = Owner.position;
@@ -30,6 +30,10 @@ public class LightCaster: Component
             }
             direction.Reflect(collisionData.collisionNormal);
             startPosition = collisionData.collisionPoints[0] + collisionData.collisionNormal;
+
+            iterationCount++;
+            if (iterationCount > 120)
+                break;
         }
     }
 }

@@ -190,7 +190,7 @@ public class Rigidbody : Component
 
         Vec2 collisionNormal = data.collisionNormal.normalized;
         float e = Mathf.Min(selfRigidbody.Bounciness, otherRigidbody.Bounciness);
-        float j = -(1 + e) * Vec2.Dot(relativeVelocity, collisionNormal) / (1 / selfRigidbody.Mass + 1 / otherRigidbody.Mass);
+        float j = -(1 + e) * Vec2.DotSecondNormalized(relativeVelocity, collisionNormal) / (1 / selfRigidbody.Mass + 1 / otherRigidbody.Mass);
 
         Vec2 impulse = j * collisionNormal;
         selfRigidbody.AddForce(impulse);
