@@ -4,33 +4,70 @@ using System;
 [Serializable]
 public class Movable: Component, IRefreshable
 {
-    public Vec2 MinPoint { get; protected set; }
-    public Vec2 MaxPoint { get; protected set; }
+    public Vec2 Point1 { get; protected set; }
+    public Vec2 Point2 { get; protected set; }
 
     public bool MovementLock { get; protected set; }
     public bool RotationLock { get; protected set; }
 
     private bool isSelected = false;
 
+    Vec2 relativePoint1 = Vec2.Zero;
+    Vec2 relativePoint2 = Vec2.Zero;
+
     public Movable(GameObject owner, params string[] args) : base(owner)
     {
-
+    
     }
+
+
 
     public override void Refresh()
     {
         base.Refresh();
         SubscribeToInput();
+        relativePoint1 = Owner.position + Point1;
+        relativePoint2 = Owner.position + Point2;
+        Debug.Log("The first point is at " + relativePoint1 + ". The second point is at " + relativePoint2);
     }
     protected override void Update() 
     {
         base.Update();
         if (!isSelected)
             return;
-
+        if (!MovementLock)
+            MoveTowardsMouse();
         
     }
+    void MoveTowardsMouse()
+    {
+        if (Owner.Rigidbody is null) return;
 
+        Vec2 mousePosition = new Vec2(Input.mouseX, Input.mouseY);
+
+        
+        Vec2 pointOnLine = new Vec2(
+            Mathf.Clamp(mousePosition.x, relativePoint1.x, relativePoint2.x),
+            Mathf.Clamp(mousePosition.y, relativePoint1.y, relativePoint2.y)
+        );
+
+        Debug.Log("Point On Line: " + pointOnLine + " with Mouse Position of " + mousePosition + " and owner position of " + Owner.position);
+
+
+        if (pointOnLine == Owner.position)
+        {
+            Debug.Log("Destination Reached");
+            return;
+        }    
+
+        Vec2 directionToPoint = (pointOnLine - Owner.position).normalized;
+
+        //Debug.Log("Direction to point: " + directionToPoint);
+
+        Owner.position.SetXY(pointOnLine.x, pointOnLine.y);
+        /**/
+
+    }
     void ChangeSelection()
     {
         Vec2 mousePosition = new Vec2(Input.mouseX, Input.mouseY);

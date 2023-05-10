@@ -10,6 +10,10 @@ using System;
     public static GameObject DocumentPointer, SelectionBox, ComponentBox, ComponentList;
 
     [STAThread] private static void Main() => new Setup();
+    
+    /*
+    Screen size was edited because debug
+    */
     public Setup() : base(1280, 720, false, pPixelArt: false, pRealWidth: Settings.Screen.Width, pRealHeight: Settings.Screen.Height)
     {
         void settings()
@@ -138,6 +142,8 @@ using System;
         AddChild(GUI = new Sprite("Empty"));
         #endregion
 
+        /*
+        
         #region Post-processing
         PostProcessing.AddChildren(new GameObject[]
         {
@@ -145,6 +151,8 @@ using System;
             AssetManager.LoadAsset("screenEffect_Add")
         });
         #endregion
+
+        */
 
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
@@ -191,6 +199,9 @@ using System;
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
         level.AddChild(player);
+
+        Sprite movableBlock = AssetManager.LoadAsset("mouseMovableRectangle") as Sprite;
+        level.AddChild(movableBlock);
         #endregion
 
         Camera.SetLevel(level);
