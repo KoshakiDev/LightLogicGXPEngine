@@ -3,7 +3,7 @@ using System;
 using System.Windows.Forms.VisualStyles;
 
 [Serializable]
-public class Movable: Component, IRefreshable
+public class Movable : Component, IRefreshable
 {
     public Vec2 Point1 { get; protected set; }
     public Vec2 Point2 { get; protected set; }
@@ -18,7 +18,7 @@ public class Movable: Component, IRefreshable
 
     public Movable(GameObject owner, params string[] args) : base(owner)
     {
-    
+
     }
 
 
@@ -29,29 +29,24 @@ public class Movable: Component, IRefreshable
         SubscribeToInput();
         relativePoint1 = Owner.position + Point1;
         relativePoint2 = Owner.position + Point2;
-        Debug.Log("The first point is at " + relativePoint1 + ". The second point is at " + relativePoint2);
     }
-    protected override void Update() 
+    protected override void Update()
     {
         base.Update();
         if (!isSelected)
             return;
     }
+
+
     void OnMouseMoved()
     {
-        if (MovementLock) return;
-        
-        Vec2 mousePosition = Input.mouseWorldPosition;
+        Vec2 pointOnLine = Vec2.ClampPoint(Input.mouseWorldPosition, relativePoint1, relativePoint2);
+        Vec2 rotateTowards = Input.mouseWorldPosition - pointOnLine;
 
-        Vec2 pointOnLine = Vec2.ClampPoint(mousePosition, relativePoint1, relativePoint2);
-
-        Owner.SetXY(pointOnLine);
+        if (!MovementLock) Owner.SetXY(pointOnLine);
+        if (!RotationLock) Owner.rotation = rotateTowards.angleInDeg;
     }
 
-    void RotateWithMouse()
-    {
-
-    }
     void ChangeSelection()
     {
         Vec2 mousePosition = new Vec2(Input.mouseX, Input.mouseY);
@@ -117,15 +112,4 @@ public class Movable: Component, IRefreshable
     {
         InputManager.OnMouseMoved -= OnMouseMoved;
     }
-
-
 }
-
-/*
-using UnityEngine;
- 
- public static class VectorUtil
- {
-     
- }
-*/
