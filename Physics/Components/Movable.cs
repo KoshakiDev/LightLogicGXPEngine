@@ -72,23 +72,18 @@ public class Movable : Component, IRefreshable
 
     private void OnSelected()
     {
-        //if (Selection.SelectedGameObject is null)
-            //return;
-
         Debug.Log(">> Selected : " + Owner.name);
         SubscribeToInputWhenSelected();
 
-        //TryOutliningGameObject(Selection.SelectedGameObject, true);
+        //TryOutliningGameObject(Owner, isSelected);
         //Selection.SelectionBoxSetVisible(true);
     }
     private void OnUnselected()
     {
-        //if (Selection.SelectedGameObject is null)
-            //return;
 
         Debug.Log(">> Deselected : " + Owner.name);
         UnsubscribeFromInputWhenUnselected();
-        //TryOutliningGameObject(Selection.SelectedGameObject, false);
+        //TryOutliningGameObject(Owner, isSelected);
         //Selection.SelectionBoxSetVisible(false);
     }
 
