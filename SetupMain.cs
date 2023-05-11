@@ -11,9 +11,7 @@ using System;
 
     [STAThread] private static void Main() => new Setup();
     
-    /*
-    Screen size was edited because debug
-    */
+    
     public Setup() : base(1280, 720, false, pPixelArt: false, pRealWidth: Settings.Screen.Width, pRealHeight: Settings.Screen.Height)
     {
         void settings()
