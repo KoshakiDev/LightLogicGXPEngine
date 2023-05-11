@@ -19,11 +19,8 @@ public class LightCaster: Component
         WHITE
     }
 
-    Color color = Color.WHITE;
+    int maxIterationCount = 120;
 
-    int maxIterationCount = 16; //120
-
-    bool hasHitPrismOnce = false;
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
         ActiveLayerMasks = args;
@@ -32,7 +29,6 @@ public class LightCaster: Component
     {
         base.Update();
 
-        hasHitPrismOnce = false;
         Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
         Vec2 startPosition = Owner.position;
 
@@ -80,15 +76,14 @@ public class LightCaster: Component
         /*
         Collision Data has "self" as the "other" collider. KEEP THIS IN MIND
         */
+
         GameObject collidedObject = collisionData.self;
 
         collidedObject.TryGetComponent(typeof(Prism), out Component prismComponent);
         
-        if (!hasHitPrismOnce && prismComponent != null)
+        if (color == Color.WHITE && prismComponent != null)
         {
-            #region Divide into 3 rays (only once)
-            hasHitPrismOnce = true;
-
+            #region Divide White Ray Into Red, Green, Blue
             Vec2 d1 = direction;
 
             Vec2 d2 = direction;
