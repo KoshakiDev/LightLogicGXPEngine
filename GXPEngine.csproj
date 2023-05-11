@@ -69,6 +69,7 @@
     <Compile Include="Physics\Components\Colliders\ColliderSurfaceAttributes.cs" />
     <Compile Include="Physics\Components\LightCaster.cs" />
     <Compile Include="Physics\Components\Movable.cs" />
+    <Compile Include="Physics\Components\Prism.cs" />
     <Compile Include="Physics\Managers\Collision.cs" />
     <Compile Include="Physics\Components\Colliders\CollisionData.cs" />
     <Compile Include="Physics\Components\Colliders\LineCollider.cs" />

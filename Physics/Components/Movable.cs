@@ -49,11 +49,9 @@ public class Movable : Component, IRefreshable
 
     void ChangeSelection()
     {
-        Vec2 mousePosition = new Vec2(Input.mouseX, Input.mouseY);
-
         bool selectionStatus = isSelected;
 
-        if (!isSelected && Owner is Sprite sprite && sprite.HitTest(mousePosition))
+        if (!isSelected && Owner is Sprite sprite && sprite.HitTest(Input.mouseScreenPosition))
            isSelected = true;
         else
             isSelected = false;

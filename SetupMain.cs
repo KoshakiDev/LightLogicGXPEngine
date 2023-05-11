@@ -11,6 +11,7 @@ using System;
 
     [STAThread] private static void Main() => new Setup();
     
+    
     public Setup() : base(1280, 720, false, pPixelArt: false, pRealWidth: Settings.Screen.Width, pRealHeight: Settings.Screen.Height)
     {
         void settings()
@@ -140,6 +141,8 @@ using System;
         AddChild(GUI = new Sprite("Empty"));
         #endregion
 
+        /*
+        
         #region Post-processing
         PostProcessing.AddChildren(new GameObject[]
         {
@@ -147,6 +150,8 @@ using System;
             AssetManager.LoadAsset("screenEffect_Add")
         });
         #endregion
+        
+        */
 
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
@@ -189,15 +194,23 @@ using System;
         Sprite level = new Sprite("Empty");
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("movableTestLevel"));
+        level.AddChild(AssetManager.LoadAsset("prismTestLevel"));
+
+        //level.AddChild(AssetManager.LoadAsset("movableTestLevel"));
+        //level.AddChild(AssetManager.LoadAsset("raycastTestLevel"));
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
-        player.SetLayerMask("Creature");
+
         player.AddComponent(typeof(LightCaster), args: new string[] 
         { 
             "Default",
             "Walls",
         });
+
+        player.SetLayerMask("Creature");
+
+        player.AddComponent(typeof(Movable), args: new string[] { });
+
         level.AddChild(player);
 
         #endregion
