@@ -24,7 +24,7 @@ using System;
             Settings.CollisionDebug = true;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
-            Settings.RaycastStep = 30;
+            Settings.RaycastStep = 10;
         }
         void subscriptions()
         {
@@ -105,7 +105,7 @@ using System;
 
             myVec = new Vec2(2, 3);
             other = new Vec2(-5, 2);
-            float floatResult = Vec2.Dot(myVec, other);
+            float floatResult = Vec2.DotSecondNormalized(myVec, other);
             Debug.Log("Dot product ok ?: " +
                 (floatResult == -4 && myVec.x == 2 && myVec.y == 3 && other.x == -5 && other.y == 2));
 
@@ -150,7 +150,7 @@ using System;
             AssetManager.LoadAsset("screenEffect_Add")
         });
         #endregion
-
+        
         */
 
         #region GXP Asset Editor
@@ -206,6 +206,8 @@ using System;
             "Default",
             "Walls",
         });
+
+        player.SetLayerMask("Creature");
 
         player.AddComponent(typeof(Movable), args: new string[] { });
 

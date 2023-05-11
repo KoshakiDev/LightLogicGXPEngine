@@ -6,8 +6,24 @@ public class LightCaster: Component
 {
     public string[] ActiveLayerMasks;
 
-    int iterationCount = 0;
-    int maxIterationCount = 120;
+
+    float refractiveIndexRed = 1.39f;
+    float refractiveIndexGreen= 1.44f;
+    float refractiveIndexBlue = 1.47f;
+
+    enum Color 
+    {
+        RED,
+        GREEN,
+        BLUE,
+        WHITE
+    }
+
+    Color color = Color.WHITE;
+
+    int maxIterationCount = 16; //120
+
+    bool hasHitPrismOnce = false;
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
         ActiveLayerMasks = args;
@@ -16,180 +32,122 @@ public class LightCaster: Component
     {
         base.Update();
 
-        iterationCount = 0;
-
+        hasHitPrismOnce = false;
         Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
         Vec2 startPosition = Owner.position;
 
-        RaycastRecursion(startPosition, direction);
+        RaycastRecursion(startPosition, direction, 0, Color.WHITE);
     }
 
-    void RaycastRecursion(Vec2 startPosition, Vec2 direction)
+    void RaycastRecursion(Vec2 startPosition, Vec2 direction, int iterationCount, Color color)
     {
+        
         bool hasFoundCollision = Physics.Collision.Raycast(startPosition, direction, Settings.RaycastStep, 1200f, out CollisionData collisionData);
 
-        if (hasFoundCollision) 
+        if (iterationCount > maxIterationCount)
         {
-            
+            return;
         }
 
         if (Settings.CollisionDebug)
         {
             Settings.ColliderDebug.StrokeWeight(4);
-            Settings.ColliderDebug.Stroke(255);
+            
+            switch(color)
+            {
+                case Color.RED:
+                    Settings.ColliderDebug.Stroke(255, 0, 0);
+                    break;
+                case Color.GREEN:
+                    Settings.ColliderDebug.Stroke(0, 255, 0);
+                    break;
+                case Color.BLUE:
+                    Settings.ColliderDebug.Stroke(0, 0, 255);
+                    break;
+                default:
+                    Settings.ColliderDebug.Stroke(255);
+                    break;
+            }
             Settings.ColliderDebug.Line(startPosition.x + Camera.Position.x, startPosition.y + Camera.Position.y, collisionData.collisionPoints[0].x + Camera.Position.x, collisionData.collisionPoints[0].y + Camera.Position.y);
             Settings.ColliderDebug.StrokeWeight(1);
         }
-        
-        direction.Reflect(collisionData.collisionNormal);
-        startPosition = collisionData.collisionPoints[0] + collisionData.collisionNormal;
-
-        
-        iterationCount++;
 
         if (!hasFoundCollision)
         {
             return;
         }
-        if (iterationCount > maxIterationCount)
-        {
-            return;
-        }
-        RaycastRecursion(startPosition, direction);
-    }
-}
 
+        /*
+        Collision Data has "self" as the "other" collider. KEEP THIS IN MIND
+        */
+        GameObject collidedObject = collisionData.self;
 
-
-
-/*
-    public float refractiveIndexRed { get; protected set; } = 1.517f;
-    public float refractiveIndexGreen { get; protected set; } = 1.624f;
-    public float refractiveIndexBlue { get; protected set; } = 1.730f;
-    CollisionData prismHitCollisionData = CollisionData.Empty;
-    Vec2 prismHitLastDirection = Vec2.Zero;           
-
-
-    protected override void Update()
-    {
-        base.Update();
-
-<<<<<<< HEAD
-        prismHit = false;
-        currentReflections = 0;
-
-        SendRay(Owner.position, Vec2.GetUnitVectorDegrees(Owner.rotation), 6f);
+        collidedObject.TryGetComponent(typeof(Prism), out Component prismComponent);
         
-        if (prismHit)
+        if (!hasHitPrismOnce && prismComponent != null)
         {
-            int savedReflectAmount = currentReflections;
+            #region Divide into 3 rays (only once)
+            hasHitPrismOnce = true;
 
-            Vec2 prismHitStartPoint = prismHitCollisionData.collisionPoints[0];
-            float angleOfIncidence = Vec2.Dot(prismHitLastDirection, prismHitCollisionData.collisionNormal);
+            Vec2 d1 = direction;
 
-            Vec2 directionRed = prismHitLastDirection;
-            Vec2 directionGreen = prismHitLastDirection;
-            Vec2 directionBlue = prismHitLastDirection;
+            Vec2 d2 = direction;
 
+            Vec2 d3 = direction;
 
-            directionRed.RotateDegrees(GetAngleOfRefraction(angleOfIncidence, refractiveIndexRed));
-            directionGreen.RotateDegrees(GetAngleOfRefraction(angleOfIncidence, refractiveIndexGreen));
-            directionBlue.RotateDegrees(GetAngleOfRefraction(angleOfIncidence, refractiveIndexBlue));
+            startPosition = collisionData.collisionPoints[0] + direction.normalized;
 
+            d1.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, refractiveIndexRed));
+            RaycastRecursion(startPosition, d1, iterationCount + 1, Color.RED);
 
-            currentReflections = savedReflectAmount;
-            SendRay(prismHitStartPoint, directionRed, refractiveIndexRed);
+            d2.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, refractiveIndexGreen));
+            RaycastRecursion(startPosition, d2, iterationCount + 1, Color.GREEN);
 
-            currentReflections = savedReflectAmount;
-            SendRay(prismHitStartPoint, directionGreen, refractiveIndexGreen);
+            d3.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, refractiveIndexBlue));
+            RaycastRecursion(startPosition, d3, iterationCount + 1, Color.BLUE);
+            #endregion
 
-            currentReflections = savedReflectAmount;
-            SendRay(prismHitStartPoint, directionBlue, refractiveIndexBlue);
         }
-        
-
-    }
-
-    void SendRay(Vec2 startPosition, Vec2 direction, float refractiveIndex)
-{
-=======
-        int iterationCount = 0;
->>>>>>> e2e333c8a5cd765c9c88f94cd344c32962cbb85f
-    bool result = true;
-
-    while (currentReflections <= maxReflectAmount)//(result && currentReflections <= maxReflectAmount)
-    {
-        result = Physics.Collision.Raycast(startPosition, direction, Settings.RaycastStep, 1200f, out CollisionData collisionData);
-
-        if (Settings.CollisionDebug)
+        else if(prismComponent != null)
         {
-            Settings.ColliderDebug.StrokeWeight(4);
-            if (refractiveIndex == refractiveIndexRed)
+            #region Pass Through Prism
+
+            switch (color)
             {
-                Settings.ColliderDebug.Stroke(255, 0, 0);
-            }
-            else if (refractiveIndex == refractiveIndexBlue)
-            {
-                Settings.ColliderDebug.Stroke(0, 255, 0);
-            }
-            else if (refractiveIndex == refractiveIndexGreen)
-            {
-                Settings.ColliderDebug.Stroke(0, 0, 255);
-            }
-            else
-            {
-                Settings.ColliderDebug.Stroke(255);
+                case Color.RED:
+                    direction.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, refractiveIndexRed));
+                    break;
+                case Color.GREEN:
+                    direction.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, refractiveIndexGreen));
+
+                    break;
+                case Color.BLUE:
+                    direction.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, refractiveIndexBlue));
+                    break;
             }
 
-            Settings.ColliderDebug.Line(startPosition.x + Camera.Position.x, startPosition.y + Camera.Position.y, collisionData.collisionPoints[0].x + Camera.Position.x, collisionData.collisionPoints[0].y + Camera.Position.y);
-            Settings.ColliderDebug.StrokeWeight(1);
-        }
+            startPosition = collisionData.collisionPoints[0] + direction.normalized;
 
-
-
-        float angleOfIncidence = Vec2.Dot(direction, collisionData.collisionNormal);
-
-        float angleOfRefraction = GetAngleOfRefraction(angleOfIncidence, refractiveIndex);
-
-        direction.RotateDegrees(angleOfRefraction);
-
-        startPosition = collisionData.collisionPoints[0];
-
-        
-        if (result) //we hit a prism
-        {
-            //Settings.ColliderDebug.Ellipse(startPosition.x, startPosition.y, 20, 20);
-
-            if (prismHit)
-            {
-            }
-            else
-            {
-                //prismHit = true;
-                //prismHitCollisionData = collisionData;
-                //prismHitLastDirection = direction;
-            }
+            RaycastRecursion(startPosition, direction, iterationCount + 1, color);
+            #endregion
         }
         else
         {
-            direction.Reflect(collisionData.collisionNormal);
+            #region Bounce Off
             startPosition = collisionData.collisionPoints[0] + collisionData.collisionNormal;
+
+            direction.Reflect(collisionData.collisionNormal);
+
+            RaycastRecursion(startPosition, direction, iterationCount + 1, color);
+            #endregion
         }
-        
 
 
-        currentReflections++;
-            direction.Reflect(collisionData.collisionNormal);
-            startPosition = collisionData.collisionPoints[0] + collisionData.collisionNormal;
-
-            iterationCount++;
-            if (iterationCount > 120)
-                break;
     }
+    float GetAngleOfRefractionInRadians(Vec2 directionOfIncidence, Vec2 normal, float refractiveIndex)
+    {
+        float angleOfIncidenceInRadians = Vec2.Dot(directionOfIncidence, normal);
+        return Mathf.Asin((Mathf.Sin(angleOfIncidenceInRadians) / refractiveIndex));
+    }
+
 }
-float GetAngleOfRefraction(float angleOfIncidence, float refractiveIndex)
-{
-    return Mathf.Asin((Mathf.Sin(angleOfIncidence) / refractiveIndex));
-}
-}
-*/

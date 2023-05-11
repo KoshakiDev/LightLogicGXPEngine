@@ -5,7 +5,6 @@ using System.Windows.Forms.VisualStyles;
 [Serializable]
 public class Prism : Component, IRefreshable
 {
-    
     public Prism(GameObject owner, params string[] args) : base(owner)
     {
 
