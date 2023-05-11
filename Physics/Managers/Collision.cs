@@ -804,17 +804,21 @@ namespace GXPEngine.PhysicsCore
 
                     if (attr.LoopedSmoothing)
                     {
-                        collisionPoint = self.CatmullRomPointLooped(p1i, p2i, t);
-                        collisionNormal = self.CatmullRomNormalLooped(p1i, p2i, t);
+                        if(attr.SmoothenedPoints)
+                            collisionPoint = self.CatmullRomPointLooped(p1i, p2i, t);
+                        if (attr.SmoothenedNormals)
+                            collisionNormal = self.CatmullRomNormalLooped(p1i, p2i, t);
                     }
                     else
                     {
-                        collisionPoint = self.CatmullRomPoint(p1i, p2i, t);
-                        collisionNormal = self.CatmullRomNormal(p1i, p2i, t);
+                        if (attr.SmoothenedPoints)
+                            collisionPoint = self.CatmullRomPoint(p1i, p2i, t);
+                        if (attr.SmoothenedNormals)
+                            collisionNormal = self.CatmullRomNormal(p1i, p2i, t);
                     }
                 }
 
-                collisionDataBuffer = new CollisionData(self.Owner, null, 0, new Vec2[] { collisionPoint }, collisionNormal, true);
+                collisionDataBuffer = new CollisionData(self.Owner, null, 0, new Vec2[] { collisionPoint }, collisionNormal, PolygonPoint(self.TransformedPoints, start.x, start.y));
             }
         }
     }

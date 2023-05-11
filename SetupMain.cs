@@ -24,7 +24,7 @@ using System;
             Settings.CollisionDebug = true;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
-            Settings.RaycastStep = 30;
+            Settings.RaycastStep = 20;
         }
         void subscriptions()
         {
@@ -140,19 +140,17 @@ using System;
         AddChild(EditorCollisionDebug = new Sprite("Empty"));
         AddChild(GUI = new Sprite("Empty"));
         #endregion
-
-        /*
         
         #region Post-processing
+        /*
         PostProcessing.AddChildren(new GameObject[]
         {
             AssetManager.LoadAsset("screenEffect_MULT"),
             AssetManager.LoadAsset("screenEffect_Add")
         });
+        */
         #endregion
         
-        */
-
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
         if (args.Length > 1)
@@ -194,10 +192,7 @@ using System;
         Sprite level = new Sprite("Empty");
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("prismTestLevel"));
-
-        //level.AddChild(AssetManager.LoadAsset("movableTestLevel"));
-        //level.AddChild(AssetManager.LoadAsset("raycastTestLevel"));
+        level.AddChild(AssetManager.LoadAsset("lensTestLevel"));
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
 
@@ -208,11 +203,9 @@ using System;
         });
 
         player.SetLayerMask("Creature");
-
         player.AddComponent(typeof(Movable), args: new string[] { });
-
+        player.rotation = -60;
         level.AddChild(player);
-
         #endregion
 
         Camera.SetLevel(level);
