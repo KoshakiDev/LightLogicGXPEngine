@@ -23,7 +23,7 @@ using System;
             Settings.CollisionDebug = true;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
-            Settings.RaycastStep = 10;
+            Settings.RaycastStep = 30;
         }
         void subscriptions()
         {

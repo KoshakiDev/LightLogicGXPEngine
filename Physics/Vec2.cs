@@ -132,6 +132,4 @@ using System.Collections.Generic;
         return point;
     }
     #endregion
-
-
 }

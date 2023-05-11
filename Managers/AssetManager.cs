@@ -17,7 +17,7 @@ public static class AssetManager
 
         try
         {
-            using (var key = Registry.ClassesRoot.CreateSubKey(".gxpa"))
+            using (RegistryKey key = Registry.ClassesRoot.CreateSubKey(".gxpa"))
             {
                 key.SetValue("", "gxpa" + "_file");
 
