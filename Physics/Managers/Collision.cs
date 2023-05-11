@@ -207,7 +207,7 @@ namespace GXPEngine.PhysicsCore
             float selfPredictedActiveRadius = self.ActiveRadius + 5 + (selfComponent is null ? 0 : (selfComponent as Rigidbody).ActualVelocity.length);
             float otherPredictedActiveRadius = other.ActiveRadius + 5 + (otherComponent is null ? 0 : (otherComponent as Rigidbody).ActualVelocity.length);
 
-            bool isExpedient =  Vec2.Distance(self.TransformedLogicalCenterOfMass, other.TransformedLogicalCenterOfMass) < selfPredictedActiveRadius + otherPredictedActiveRadius;
+            bool isExpedient = Vec2.Distance(self.TransformedLogicalCenterOfMass, other.TransformedLogicalCenterOfMass) < selfPredictedActiveRadius + otherPredictedActiveRadius;
 
             if (Settings.CollisionDebug)
             {
@@ -381,7 +381,7 @@ namespace GXPEngine.PhysicsCore
             void findDirectionOfCollision(out Vec2 fcollisionNormal)
             {
                 fcollisionNormal = minAxis;
-                if (Vec2.Dot(new Vec2(selfCollider.Owner.x, selfCollider.Owner.y), fcollisionNormal) > Vec2.Dot(new Vec2(otherCollider.Owner.x, otherCollider.Owner.y), fcollisionNormal))
+                if (Vec2.DotSecondNormalized(new Vec2(selfCollider.Owner.x, selfCollider.Owner.y), fcollisionNormal) > Vec2.DotSecondNormalized(new Vec2(otherCollider.Owner.x, otherCollider.Owner.y), fcollisionNormal))
                 {
                     fcollisionNormal = Vec2.Zero - fcollisionNormal;
                     swap(ref selfPoints, ref otherPoints);
@@ -398,14 +398,14 @@ namespace GXPEngine.PhysicsCore
                     Vec2 edge = pointA2 - pointA1;
                     Vec2 edgeNormal = new Vec2(-edge.y, edge.x).normalized;
 
-                    if (Vec2.Dot(edgeNormal, fcollisionNormal) > 0)
+                    if (Vec2.DotSecondNormalized(edgeNormal, fcollisionNormal) > 0)
                         continue;
 
                     for (int j = 0; j < pointsB.Length; j++)
                     {
                         Vec2 pointB = pointsB[j];
 
-                        float distance = Vec2.Dot(pointB - pointA1, edgeNormal);
+                        float distance = Vec2.DotSecondNormalized(pointB - pointA1, edgeNormal);
 
                         if (distance > 0 && distance < edge.length)
                             fcollisionPoints.Add(pointB);
@@ -463,7 +463,7 @@ namespace GXPEngine.PhysicsCore
                 });
             }
 
-            if (Vec2.Dot(relativeVelocity.normalized, relativePosition) > 0 || distance > self.Radius + other.Radius)
+            if (Vec2.DotSecondNormalized(relativeVelocity.normalized, relativePosition) > 0 || distance > self.Radius + other.Radius)
                 return CollisionData.Empty;
 
             return new CollisionData(self.Owner, other.Owner, timeOfImpact(), new Vec2[] { collisionPoint }, (collisionPoint - otherCenter).normalized, distance <= Mathf.Abs(self.Radius - other.Radius));
@@ -512,9 +512,9 @@ namespace GXPEngine.PhysicsCore
             float radius = other.Radius;
 
             Vec2 lineDirection = self.LineEnd - self.LineStart;
-            float a = Vec2.Dot(lineDirection, lineDirection);
-            float b = Vec2.Dot(2 * (self.LineStart - circleCenter), lineDirection);
-            float c = Vec2.Dot((circleCenter - self.LineStart), circleCenter - self.LineStart) - radius * radius;
+            float a = Vec2.DotSecondNormalized(lineDirection, lineDirection);
+            float b = Vec2.DotSecondNormalized(2 * (self.LineStart - circleCenter), lineDirection);
+            float c = Vec2.DotSecondNormalized((circleCenter - self.LineStart), circleCenter - self.LineStart) - radius * radius;
 
             float discriminant = b * b - 4 * a * c;
             if (discriminant < 0)
@@ -608,7 +608,7 @@ namespace GXPEngine.PhysicsCore
             bool inside1 = PointCircle(start, center, r);
             bool inside2 = PointCircle(end, center, r);
 
-            if (inside1 || inside2) 
+            if (inside1 || inside2)
                 return true;
 
             Vec2 dist = new Vec2(start.x - end.x, start.y - end.y);
@@ -629,7 +629,7 @@ namespace GXPEngine.PhysicsCore
                 {
                     Settings.ColliderDebug.Stroke(255, 0, 0);
                     Settings.ColliderDebug.Ellipse(closestX + Camera.Position.x, closestY + Camera.Position.y, 20, 20);
-                }); 
+                });
             }
 
             dist = new Vec2(closestX - center.x, closestY - center.y);
@@ -715,6 +715,7 @@ namespace GXPEngine.PhysicsCore
             return Mathf.Abs(radius - oldPosition.length) / newPosition.length + radius;
         }
 
+
         public bool Raycast(Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData, string layerMask = "Default")
         {
             Vec2 end = start + direction * step;
@@ -722,7 +723,7 @@ namespace GXPEngine.PhysicsCore
             CollisionData collisionDataBuffer;
             float minDistance = float.MaxValue;
             bool found = false;
-            while (Vec2.Distance(start, end) < maxDistance) 
+            while (Vec2.Distance(start, end) < maxDistance)
             {
                 foreach (Collider other in Physics.Colliders)
                 {
@@ -730,6 +731,8 @@ namespace GXPEngine.PhysicsCore
                     if (!ValidateExpediency(end, other, 30)) continue;
                     if (other is PolygonCollider poly)
                         collisionDataBuffer = polygonLine(poly, start, end);
+                    else if (other is CircleCollider circle)
+                        collisionDataBuffer = circleLine(circle, start, end);
                     else collisionDataBuffer = CollisionData.Empty;
                     if (collisionDataBuffer.isEmpty) continue;
                     float distance = Vec2.Distance(start, collisionDataBuffer.AverageCollisionPoint());
@@ -763,7 +766,7 @@ namespace GXPEngine.PhysicsCore
                     Vec2 segmentStart = self.TransformedPoints[current];
                     Vec2 segmentEnd = self.TransformedPoints[next];
 
-                    if (LineLine(a, b,segmentEnd, segmentStart, out Vec2 point))
+                    if (LineLine(a, b, segmentEnd, segmentStart, out Vec2 point))
                     {
                         hasCollision = true;
                         float distance = Vec2.Distance(a, point);
@@ -778,6 +781,19 @@ namespace GXPEngine.PhysicsCore
                 }
                 if (hasCollision)
                     return new CollisionData(self.Owner, null, 0, new Vec2[] { collisionPoint }, collisionNormal, true);
+
+                return CollisionData.Empty;
+            }
+            CollisionData circleLine(CircleCollider self, Vec2 a, Vec2 b)
+            {
+                Vec2 selfPrediction = self.Owner.Rigidbody is null ? Vec2.Zero : self.Owner.Rigidbody.ActualVelocity;
+                float cx = self.Owner.x + self.Offset.x;
+                float cy = self.Owner.y + self.Offset.y;
+                float r = self.Radius;
+
+                bool collision = LineCircle(a, b, self, out Vec2 closestPoint);
+                closestPoint -= r * (new Vec2(cx, cy) - b).normalized;
+                if (collision) return new CollisionData(self.Owner, null, 0, new Vec2[] { closestPoint }, (closestPoint - new Vec2(cx, cy)).normal, false);
 
                 return CollisionData.Empty;
             }

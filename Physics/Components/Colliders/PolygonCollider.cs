@@ -42,7 +42,7 @@ using System.Collections.Generic;
             Vec2 p1 = Points[i];
             Vec2 p2 = Points[(i + 1) % Points.Length];
             float a = Vec2.Cross(p1, p2);
-            float b = Vec2.Dot(p1, p1) + Vec2.Dot(p1, p2) + Vec2.Dot(p2, p2);
+            float b = Vec2.DotSecondNormalized(p1, p1) + Vec2.DotSecondNormalized(p1, p2) + Vec2.DotSecondNormalized(p2, p2);
             sum1 += a * b;
             sum2 += a;
         }
