@@ -196,7 +196,9 @@ using System;
         Sprite level = new Sprite("Empty");
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("movableTestLevel"));
+        level.AddChild(AssetManager.LoadAsset("prismTestLevel"));
+
+        //level.AddChild(AssetManager.LoadAsset("movableTestLevel"));
         //level.AddChild(AssetManager.LoadAsset("raycastTestLevel"));
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
@@ -206,6 +208,9 @@ using System;
             "Default",
             "Walls",
         });
+
+        player.AddComponent(typeof(Movable), args: new string[] { });
+
         level.AddChild(player);
 
         #endregion
