@@ -106,7 +106,6 @@ public class LightCaster: Component
             d3.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, refractiveIndexBlue));
             RaycastRecursion(startPosition, d3, iterationCount + 1, Color.BLUE);
             #endregion
-
         }
         else if(prismComponent != null)
         {
@@ -141,8 +140,6 @@ public class LightCaster: Component
             RaycastRecursion(startPosition, direction, iterationCount + 1, color);
             #endregion
         }
-
-
     }
     float GetAngleOfRefractionInRadians(Vec2 directionOfIncidence, Vec2 normal, float refractiveIndex)
     {
