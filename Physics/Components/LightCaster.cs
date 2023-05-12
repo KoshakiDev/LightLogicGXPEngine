@@ -1,6 +1,5 @@
 ﻿using GXPEngine;
 using System;
-using System.Collections.Generic;
 
 [Serializable]
 public class LightCaster: Component
@@ -33,7 +32,7 @@ public class LightCaster: Component
 
         _hasHitPrismOnce = false;
         Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
-        Vec2 startPosition = Owner.position;
+        Vec2 startPosition = Owner.position * Owner.parent.TransformedScale();
         _reflectCount = 0;
 
         Raycast(startPosition, direction, LightColor.WHITE);
@@ -41,12 +40,11 @@ public class LightCaster: Component
 
     private void Raycast(Vec2 startPosition, Vec2 direction, LightColor color)
     {
-        List<string> LayerMasks = new List<string>();
-        ActiveLayerMasks.CopyTo(ActiveLayerMasks, 0);
         Vec2 visualOffset = Vec2.Zero;
         while (true)
         {
-            bool collision = Physics.Collision.Raycast(LayerMasks, startPosition, direction, Settings.RaycastStep, MAX_RAY_DISTANCE, out CollisionData collisionData);
+            bool collision = Physics.Collision.Raycast(startPosition, direction, Settings.RaycastStep, MAX_RAY_DISTANCE, out CollisionData collisionData);
+
             if (_reflectCount > MAX_REFLECT_COUNT) break;
             if (Settings.CollisionDebug)
             {
@@ -76,7 +74,7 @@ public class LightCaster: Component
                     );
                 Settings.ColliderDebug.StrokeWeight(1);
             }
-            if (!collision) break;
+            if (!collision || !checkLayers(ActiveLayerMasks, collisionData.self?.LayerMask)) break;
 
             collisionData.self.TryGetComponent(typeof(Prism), out Component prismComponent);
             collisionData.self.TryGetComponent(typeof(ColliderSurfaceAttributes), out Component attrComponent);
@@ -146,6 +144,18 @@ public class LightCaster: Component
                 direction.Reflect(collisionData.collisionNormal);
                 _reflectCount++;
                 #endregion
+            }
+            bool checkLayers(string[] layers, string layerToCheck)
+            {
+                if (layers is null || layers.Length == 0)
+                    return false;
+
+                foreach (string layer in layers)
+                {
+                    if (layer == layerToCheck)
+                        return true;
+                }
+                return false;
             }
         }
     }

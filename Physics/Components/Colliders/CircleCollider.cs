@@ -6,7 +6,7 @@ using System;
     private float _radius;
     public float Radius 
     { 
-        get => _radius * Owner.scaleX;
+        get => _radius * Owner.TransformedScale().x;
         set => _radius = value; 
     }
     public Vec2 Offset { get; protected set; }
@@ -31,10 +31,10 @@ using System;
     public override void ShowDebug()
     {
         Settings.ColliderDebug.Stroke(255, 255, 255);
-        Settings.ColliderDebug.Ellipse( Owner.x + Camera.Position.x, Owner.y + Camera.Position.y, Radius * 2, Radius * 2);
+        Settings.ColliderDebug.Ellipse( Owner.x * Owner.parent.TransformedScale().x + Camera.Position.x, Owner.y * Owner.parent.TransformedScale().y + Camera.Position.y, Radius * 2, Radius * 2);
     }
     public override void ShowEditorDebug()
     {
-        Settings.EditorColliderDebug.Ellipse(Owner.x + Camera.Position.x, Owner.y + Camera.Position.y, Radius * 2, Radius * 2);
+        Settings.EditorColliderDebug.Ellipse(Owner.x * Owner.parent.TransformedScale().x + Camera.Position.x, Owner.y * Owner.parent.TransformedScale().y + Camera.Position.y, Radius * 2, Radius * 2);
     }
 }

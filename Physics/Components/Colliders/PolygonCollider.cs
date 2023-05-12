@@ -10,10 +10,10 @@ using System.Collections.Generic;
         get
         {
             Vec2[] transformedPoints = new Vec2[Points.Length];
-            Vec2 origin = new Vec2(Owner.x, Owner.y);
+            Vec2 origin = new Vec2(Owner.x, Owner.y) * Owner.parent.TransformedScale();
             for (int i = 0; i < transformedPoints.Length; i++)
             {
-                transformedPoints[i] = Points[i] * Owner.scale + origin;
+                transformedPoints[i] = Points[i] * Owner.TransformedScale() + origin;
                 transformedPoints[i].RotateAroundDegrees(Owner.rotation, origin);
             }
             return transformedPoints;
@@ -24,10 +24,10 @@ using System.Collections.Generic;
         get
         {
             Vec2[] debugPoints = new Vec2[Points.Length];
-            Vec2 origin = new Vec2(Owner.y, Owner.x);
+            Vec2 origin = new Vec2(Owner.y * Owner.parent.TransformedScale().y, Owner.x * Owner.parent.TransformedScale().x);
             for (int i = 0; i < debugPoints.Length; i++)
             {
-                debugPoints[i] = new Vec2(Points[i].x * Owner.scale.x + origin.x, origin.y - Points[i].y * Owner.scale.y);
+                debugPoints[i] = new Vec2(Points[i].x * Owner.TransformedScale().x + origin.x, origin.y - Points[i].y * Owner.TransformedScale().y);
                 debugPoints[i].RotateAroundDegrees(-Owner.rotation + 90, origin);
                 debugPoints[i] += new Vec2(Camera.Position.y , Camera.Position.x);
             }

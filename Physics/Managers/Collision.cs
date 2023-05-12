@@ -724,7 +724,7 @@ namespace GXPEngine.PhysicsCore
             return t;
         }
 
-        public bool Raycast(List<string> layerMasks, Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData)
+        public bool Raycast(Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData)
         {
             Vec2 end = start + direction * step;
             collisionData = new CollisionData(null, null, 0, new Vec2[] { start + direction * maxDistance }, Vec2.Zero, false);
@@ -736,7 +736,6 @@ namespace GXPEngine.PhysicsCore
                 foreach (Collider other in Physics.Colliders)
                 {
                     collisionDataBuffer = CollisionData.Empty;
-                    if (layerMasks.Contains(other.Owner.LayerMask)) continue;
                     if (!ValidateExpediency(end, other, Settings.RaycastStep / 2)) continue;
                     if (other is PolygonCollider poly)
                         polygonLine(poly, start, end);

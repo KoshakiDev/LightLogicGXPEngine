@@ -140,10 +140,12 @@ using System;
         AddChild(PostProcessing = new Sprite("Empty"));
         AddChild(EditorCollisionDebug = new Sprite("Empty"));
         AddChild(GUI = new Sprite("Empty"));
+
+        MainLayer.AddChild(DocumentPointer = AssetManager.LoadAsset("pointer"));
         #endregion
-        
+
         #region Post-processing
-        
+
         PostProcessing.AddChildren(new GameObject[]
         {
             AssetManager.LoadAsset("screenEffect_MULT"),
@@ -157,7 +159,6 @@ using System;
         if (args.Length > 1)
         {
             EditorCollisionDebug.AddChild(AssetManager.LoadAsset("editor"));
-            MainLayer.AddChild(DocumentPointer = AssetManager.LoadAsset("pointer"));
             GUI.AddChild(SelectionBox = new Sprite("selection_box", layerMask: "GUI")
             {
                 x = 7,
@@ -180,7 +181,7 @@ using System;
             Camera.SetLevel(MainLayer);
             Camera.AddFocus(DocumentPointer);
             Camera.SetFactor(0.1f);
-            Settings.ComponentRegistrationBlock = true;
+            Settings.ComponentRegistrationBlock = false;
 
             GXPAssetEditor.Start(args[1]);
             GXPAssetEditor.SubscribeEditor();
@@ -190,21 +191,18 @@ using System;
         #endregion
 
         #region Setup level
-        Sprite level = new Sprite("Empty");
+        Sprite level = new Sprite("Empty") { };
         MainLayer.AddChild(level);
 
         level.AddChild(AssetManager.LoadAsset("LEVEL3"));
 
-        Sprite player = AssetManager.LoadAsset("player") as Sprite;
+        Sprite player = level.GetChildren()[0].FindGameObjectByName("Circle")[0] as Sprite;
         player.AddComponent(typeof(Movable), args: new string[] { });
-        player.rotation = -60;
-        level.AddChild(player);
 
         #endregion
 
         Camera.SetLevel(level);
-        Camera.AddFocus(player);
-
+        Camera.AddFocus(DocumentPointer);
         Debug.Log("\n-----Start-----\n");
     }
 }
