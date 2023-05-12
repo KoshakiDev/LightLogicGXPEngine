@@ -30,6 +30,7 @@ using System;
 	public Collider(GameObject owner, params string[] args) : base(owner)
 	{
 		IsTrigger = args.Length > 0 && bool.Parse(args[0]);
+		owner.AddComponent(typeof(ColliderSurfaceAttributes));
 	}
 	public virtual float CalculateActiveRadius() => 1;
 	public virtual void ShowDebug() { }

@@ -15,10 +15,3 @@ public class Component : IRefreshable
 	public virtual void Refresh() => Settings.Setup.OnAfterStep += Update;
 	protected virtual void Update() { }
 }
-
-
-
-
-
-
-

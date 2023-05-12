@@ -102,6 +102,50 @@ using System.Collections.Generic;
         }
         return edges;
     }
+
+    public Vec2 CatmullRomPoint(int p1i, int p2i, float t)
+    {
+        t = t > 1 ? 1 : (t < 0 ? 0 : t);
+        Vec2 p0 = p1i > 0 ? TransformedPoints[p1i - 1] : TransformedPoints[p1i];
+        Vec2 p1 = TransformedPoints[p1i];
+        Vec2 p2 = TransformedPoints[p2i];
+        Vec2 p3 = p2i < Points.Length - 1 ? TransformedPoints[p2i + 1] : TransformedPoints[p2i];
+        float t2 = t * t;
+        float t3 = t2 * t;
+        Vec2 smoothPoint = 0.5f * ((2.0f * p1) + (p2 - p0) * t +
+            (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
+            (3.0f * p1 - 3.0f * p2 + p3 - p0) * t3);
+        return smoothPoint;
+    }
+    public Vec2 CatmullRomPointLooped(int p1i, int p2i, float t)
+    {
+        t = t > 1? 1 : (t < 0 ? 0 : t);
+        Vec2 p0 = p1i > 0 ? TransformedPoints[p1i - 1] : TransformedPoints[Points.Length - 1];
+        Vec2 p1 = TransformedPoints[p1i];
+        Vec2 p2 = TransformedPoints[p2i];
+        Vec2 p3 = p2i < Points.Length - 1 ? TransformedPoints[p2i + 1] : TransformedPoints[0];
+        float t2 = t * t;
+        float t3 = t2 * t;
+        Vec2 smoothPoint = 0.5f * ((2.0f * p1) + (p2 - p0) * t +
+            (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
+            (3.0f * p1 - 3.0f * p2 + p3 - p0) * t3);
+        return smoothPoint;
+    }
+    public Vec2 CatmullRomNormal(int p1i, int p2i, float t)
+    {
+        t = t > 1 ? 1 : (t < 0 ? 0 : t);
+        Vec2 tangent = CatmullRomPoint(p1i, p2i, t + 0.01f) - CatmullRomPoint(p1i, p2i, t - 0.01f);
+        Vec2 normal = new Vec2(-tangent.y, tangent.x).normalized;
+        return normal;
+    }
+    public Vec2 CatmullRomNormalLooped(int p1i, int p2i, float t)
+    {
+        t = t > 1 ? 1 : (t < 0 ? 0 : t);
+        Vec2 tangent = CatmullRomPointLooped(p1i, p2i, t + 0.01f) - CatmullRomPointLooped(p1i, p2i, t - 0.01f);
+        Vec2 normal = new Vec2(-tangent.y, tangent.x).normalized;
+        return normal;
+    }
+
     public override void ShowDebug()
     {
 
@@ -126,8 +170,8 @@ using System.Collections.Generic;
         }
         Settings.EditorColliderDebug.Polygon(pointCoordinates);
     }
-    protected virtual void RefreshPoints()
-    { 
-    }
+
+    protected virtual void RefreshPoints() { }
 }
+
 

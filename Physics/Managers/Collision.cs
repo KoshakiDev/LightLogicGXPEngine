@@ -714,9 +714,17 @@ namespace GXPEngine.PhysicsCore
         {
             return Mathf.Abs(radius - oldPosition.length) / newPosition.length + radius;
         }
+        private float GetInterpolationFactor(Vec2 P, Vec2 A, Vec2 B)
+        {
+            Vec2 AP = P - A;
+            Vec2 AB = B - A;
+            float ab2 = Vec2.Dot(AB, AB);
+            float ap_ab = Vec2.Dot(AP, AB);
+            float t = ap_ab / ab2;
+            return t;
+        }
 
-
-        public bool Raycast(Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData, string layerMask = "Default")
+        public bool Raycast(List<string> layerMasks, Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData)
         {
             Vec2 end = start + direction * step;
             collisionData = new CollisionData(null, null, 0, new Vec2[] { start + direction * maxDistance }, Vec2.Zero, false);
@@ -727,13 +735,11 @@ namespace GXPEngine.PhysicsCore
             {
                 foreach (Collider other in Physics.Colliders)
                 {
-                    if (!other.Owner.CompareLayerMask(layerMask)) continue;
-                    if (!ValidateExpediency(end, other, 30)) continue;
+                    collisionDataBuffer = CollisionData.Empty;
+                    if (layerMasks.Contains(other.Owner.LayerMask)) continue;
+                    if (!ValidateExpediency(end, other, Settings.RaycastStep / 2)) continue;
                     if (other is PolygonCollider poly)
-                        collisionDataBuffer = polygonLine(poly, start, end);
-                    else if (other is CircleCollider circle)
-                        collisionDataBuffer = circleLine(circle, start, end);
-                    else collisionDataBuffer = CollisionData.Empty;
+                        polygonLine(poly, start, end);
                     if (collisionDataBuffer.isEmpty) continue;
                     float distance = Vec2.Distance(start, collisionDataBuffer.AverageCollisionPoint());
                     if (distance < minDistance)
@@ -749,13 +755,21 @@ namespace GXPEngine.PhysicsCore
             }
             return false;
 
-            CollisionData polygonLine(PolygonCollider self, Vec2 a, Vec2 b)
-            {
+            void polygonLine(PolygonCollider self, Vec2 a, Vec2 b)
+            {  
+                self.Owner.TryGetComponent(typeof(ColliderSurfaceAttributes), out Component component);
+                ColliderSurfaceAttributes attr = component as ColliderSurfaceAttributes;
+
                 bool hasCollision = false;
                 Vec2 collisionPoint = Vec2.Zero;
 
                 float closestDistance = float.MaxValue;
                 Vec2 collisionNormal = Vec2.Zero;
+
+                int p1i = 0, p2i = 0;
+                Vec2 segmentStart = Vec2.Zero;
+                Vec2 segmentEnd = Vec2.Zero;
+
 
                 int next = 0;
                 for (int current = 0; current < self.Points.Length; current++)
@@ -763,39 +777,47 @@ namespace GXPEngine.PhysicsCore
                     next = current + 1;
                     if (next == self.Points.Length) next = 0;
 
-                    Vec2 segmentStart = self.TransformedPoints[current];
-                    Vec2 segmentEnd = self.TransformedPoints[next];
-
-                    if (LineLine(a, b, segmentEnd, segmentStart, out Vec2 point))
+                    if (LineLine(a, b, self.TransformedPoints[next], self.TransformedPoints[current], out Vec2 point))
                     {
                         hasCollision = true;
                         float distance = Vec2.Distance(a, point);
 
                         if (distance < closestDistance)
                         {
-                            closestDistance = distance;
                             collisionPoint = point;
-                            collisionNormal = (segmentEnd - segmentStart).normal;
+                            p1i = current;
+                            p2i = next;
+                            segmentStart = self.TransformedPoints[current];
+                            segmentEnd = self.TransformedPoints[next];
+                            closestDistance = distance;
                         }
                     }
                 }
-                if (hasCollision)
-                    return new CollisionData(self.Owner, null, 0, new Vec2[] { collisionPoint }, collisionNormal, true);
+                if (!hasCollision)
+                    return;
 
-                return CollisionData.Empty;
-            }
-            CollisionData circleLine(CircleCollider self, Vec2 a, Vec2 b)
-            {
-                Vec2 selfPrediction = self.Owner.Rigidbody is null ? Vec2.Zero : self.Owner.Rigidbody.ActualVelocity;
-                float cx = self.Owner.x + self.Offset.x;
-                float cy = self.Owner.y + self.Offset.y;
-                float r = self.Radius;
+                collisionNormal = (segmentEnd - segmentStart).normal;
+                if(attr != null)
+                {
+                    if (attr.LoopedSmoothing)
+                    {
+                        float t = GetInterpolationFactor(collisionPoint, segmentStart, segmentEnd);
+                        if (attr.SmoothenedPoints)
+                            collisionPoint = self.CatmullRomPointLooped(p1i, p2i, t);
+                        if (attr.SmoothenedNormals)
+                            collisionNormal = self.CatmullRomNormalLooped(p1i, p2i, t);
+                    }
+                    else
+                    {
+                        float t = GetInterpolationFactor(collisionPoint, segmentStart, segmentEnd);
+                        if (attr.SmoothenedPoints)
+                            collisionPoint = self.CatmullRomPoint(p1i, p2i, t);
+                        if (attr.SmoothenedNormals)
+                            collisionNormal = self.CatmullRomNormal(p1i, p2i, t);
+                    }
+                }
 
-                bool collision = LineCircle(a, b, self, out Vec2 closestPoint);
-                closestPoint -= r * (new Vec2(cx, cy) - b).normalized;
-                if (collision) return new CollisionData(self.Owner, null, 0, new Vec2[] { closestPoint }, (closestPoint - new Vec2(cx, cy)).normal, false);
-
-                return CollisionData.Empty;
+                collisionDataBuffer = new CollisionData(self.Owner, null, 0, new Vec2[] { collisionPoint }, collisionNormal, PolygonPoint(self.TransformedPoints, start.x, start.y));
             }
         }
     }
