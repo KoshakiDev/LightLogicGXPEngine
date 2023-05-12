@@ -20,7 +20,6 @@ public class LightCaster: Component
 
     public string[] ActiveLayerMasks;
 
-    private bool _hasHitPrismOnce = false;
     private int _reflectCount = 0;
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
@@ -30,7 +29,6 @@ public class LightCaster: Component
     {
         base.Update();
 
-        _hasHitPrismOnce = false;
         Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
         Vec2 startPosition = Owner.position * Owner.parent.TransformedScale();
         _reflectCount = 0;
@@ -79,11 +77,12 @@ public class LightCaster: Component
             collisionData.self.TryGetComponent(typeof(Prism), out Component prismComponent);
             collisionData.self.TryGetComponent(typeof(ColliderSurfaceAttributes), out Component attrComponent);
 
-            if (!_hasHitPrismOnce && prismComponent != null)
+            
+            if (color == LightColor.WHITE && prismComponent != null)
             {
+                Debug.Log("hit prism");
                 #region Divide into 3 rays (only once)
-                _hasHitPrismOnce = true;
-
+                
                 Vec2 d1 = direction;
                 Vec2 d2 = direction;
                 Vec2 d3 = direction;
