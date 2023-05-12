@@ -30,7 +30,7 @@ public class LightCaster: Component
         base.Update();
 
         Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
-        Vec2 startPosition = Owner.position * Owner.parent.TransformedScale();
+        Vec2 startPosition = Owner.position;
         _reflectCount = 0;
 
         Raycast(startPosition, direction, LightColor.WHITE);

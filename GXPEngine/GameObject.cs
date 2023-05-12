@@ -67,20 +67,6 @@ namespace GXPEngine
         public bool CompareLayerMask(string layer) => Physics.CompareLayers(LayerMask, layer);
         public bool CompareLayerMaskByID(int ID) => Physics.CompareLayers(LayerMask, Physics.GetLayerByID(ID));
 
-        public Vec2 TransformedScale()
-        {
-            Vec2 transformedScale = new Vec2(scaleX, scaleY);
-            GameObject operatingObject = this; 
-            while (true)
-            {
-                if (operatingObject.parent is null)
-                    break;
-
-                transformedScale *= new Vec2(operatingObject.parent.scaleX, operatingObject.parent.scaleY);
-                operatingObject = operatingObject.parent;
-            }
-            return transformedScale;
-        }
         //------------------------------------------------------------------------------------------------------------------------
         //														Index
         //------------------------------------------------------------------------------------------------------------------------
