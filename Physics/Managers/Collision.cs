@@ -736,7 +736,7 @@ namespace GXPEngine.PhysicsCore
                 foreach (Collider other in Physics.Colliders)
                 {
                     collisionDataBuffer = CollisionData.Empty;
-                    if (!ValidateExpediency(end, other, Settings.RaycastStep / 2)) continue;
+                    if (!ValidateExpediency(end, other, Settings.RaycastStep*2)) continue;
                     if (other is PolygonCollider poly)
                         polygonLine(poly, start, end);
                     if (collisionDataBuffer.isEmpty) continue;

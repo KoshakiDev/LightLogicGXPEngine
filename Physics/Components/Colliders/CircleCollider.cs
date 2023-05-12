@@ -1,13 +1,14 @@
 ﻿using GXPEngine;
 using System;
 
-[Serializable] public class CircleCollider : Collider
+[Serializable]
+public class CircleCollider : Collider
 {
     private float _radius;
-    public float Radius 
-    { 
+    public float Radius
+    {
         get => _radius * Owner.scaleX;
-        set => _radius = value; 
+        set => _radius = value;
     }
     public Vec2 Offset { get; protected set; }
     public override float momentOfInertia(float mass) => (mass * Radius * Radius) / 2f;
@@ -23,7 +24,7 @@ using System;
 
         Offset = args.Length > 3 ? new Vec2(float.Parse(args[2]), float.Parse(args[3])) : Vec2.Zero;
     }
-    public override float CalculateActiveRadius() 
+    public override float CalculateActiveRadius()
     {
         LogicalCenterOfMass = Offset;
         return Radius;
@@ -31,7 +32,7 @@ using System;
     public override void ShowDebug()
     {
         Settings.ColliderDebug.Stroke(255, 255, 255);
-        Settings.ColliderDebug.Ellipse( Owner.x + Camera.Position.x, Owner.y + Camera.Position.y, Radius * 2, Radius * 2);
+        Settings.ColliderDebug.Ellipse(Owner.x + Camera.Position.x, Owner.y + Camera.Position.y, Radius * 2, Radius * 2);
     }
     public override void ShowEditorDebug()
     {

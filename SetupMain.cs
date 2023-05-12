@@ -194,7 +194,7 @@ using System;
         Sprite level = new Sprite("Empty") { };
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("LEVEL3"));
+        level.AddChild(AssetManager.LoadAsset("colliderTest"));
 
         #endregion
 
