@@ -1,5 +1,6 @@
 ﻿using GXPEngine;
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class LightCaster: Component
@@ -17,7 +18,6 @@ public class LightCaster: Component
     private const float IOR_RED = 1.39f;
     private const float IOR_GREEN = 1.44f;
     private const float IOR_BLUE = 1.47f;
-    private const float IOR_GLASS = 1.5f;
 
     public string[] ActiveLayerMasks;
 
@@ -41,10 +41,12 @@ public class LightCaster: Component
 
     private void Raycast(Vec2 startPosition, Vec2 direction, LightColor color)
     {
+        List<string> LayerMasks = new List<string>();
+        ActiveLayerMasks.CopyTo(ActiveLayerMasks, 0);
+        Vec2 visualOffset = Vec2.Zero;
         while (true)
         {
-            bool collision = Physics.Collision.Raycast(startPosition, direction, Settings.RaycastStep, MAX_RAY_DISTANCE, out CollisionData collisionData);
-
+            bool collision = Physics.Collision.Raycast(LayerMasks, startPosition, direction, Settings.RaycastStep, MAX_RAY_DISTANCE, out CollisionData collisionData);
             if (_reflectCount > MAX_REFLECT_COUNT) break;
             if (Settings.CollisionDebug)
             {
@@ -65,7 +67,13 @@ public class LightCaster: Component
                         Settings.ColliderDebug.Stroke(255);
                         break;
                 }
-                Settings.ColliderDebug.Line(startPosition.x + Camera.Position.x, startPosition.y + Camera.Position.y, collisionData.collisionPoints[0].x + Camera.Position.x, collisionData.collisionPoints[0].y + Camera.Position.y);
+                Settings.ColliderDebug.Line
+                    (
+                    startPosition.x - visualOffset.x + Camera.Position.x,
+                    startPosition.y - visualOffset.y + Camera.Position.y,
+                    collisionData.collisionPoints[0].x  + Camera.Position.x,
+                    collisionData.collisionPoints[0].y  + Camera.Position.y
+                    );
                 Settings.ColliderDebug.StrokeWeight(1);
             }
             if (!collision) break;
@@ -125,6 +133,7 @@ public class LightCaster: Component
                 collisionData.collisionNormal = collisionData.isInside ? collisionData.collisionNormal.inverted : collisionData.collisionNormal;
                 direction = GetLensRefractedDirection(direction, collisionData.collisionNormal, 0.6f);
                 startPosition = collisionData.collisionPoints[0] + direction * 8;
+                visualOffset = direction * 8;
 
                 _reflectCount++;
                 #endregion
@@ -132,9 +141,9 @@ public class LightCaster: Component
             else
             {
                 #region Bounce Off
-                startPosition = collisionData.collisionPoints[0] + collisionData.collisionNormal;
+                startPosition = collisionData.collisionPoints[0] + collisionData.collisionNormal * 8;
+                visualOffset = collisionData.collisionNormal * 8;
                 direction.Reflect(collisionData.collisionNormal);
-
                 _reflectCount++;
                 #endregion
             }

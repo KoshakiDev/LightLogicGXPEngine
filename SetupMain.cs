@@ -24,7 +24,7 @@ using System;
             Settings.CollisionDebug = true;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
-            Settings.RaycastStep = 20;
+            Settings.RaycastStep = 100;
         }
         void subscriptions()
         {
@@ -41,6 +41,7 @@ using System;
                 "Bullets",
                 "Creatures",
                 "Walls",
+                "Mirrors",
                 "GUI",
             });
         }
@@ -142,13 +143,13 @@ using System;
         #endregion
         
         #region Post-processing
-        /*
+        
         PostProcessing.AddChildren(new GameObject[]
         {
             AssetManager.LoadAsset("screenEffect_MULT"),
             AssetManager.LoadAsset("screenEffect_Add")
         });
-        */
+        
         #endregion
         
         #region GXP Asset Editor
@@ -192,20 +193,13 @@ using System;
         Sprite level = new Sprite("Empty");
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("lensTestLevel"));
+        level.AddChild(AssetManager.LoadAsset("LEVEL3"));
 
         Sprite player = AssetManager.LoadAsset("player") as Sprite;
-
-        player.AddComponent(typeof(LightCaster), args: new string[] 
-        { 
-            "Default",
-            "Walls",
-        });
-
-        player.SetLayerMask("Creature");
         player.AddComponent(typeof(Movable), args: new string[] { });
         player.rotation = -60;
         level.AddChild(player);
+
         #endregion
 
         Camera.SetLevel(level);

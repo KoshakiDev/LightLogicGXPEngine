@@ -724,7 +724,7 @@ namespace GXPEngine.PhysicsCore
             return t;
         }
 
-        public bool Raycast(Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData, string layerMask = "Default")
+        public bool Raycast(List<string> layerMasks, Vec2 start, Vec2 direction, float step, float maxDistance, out CollisionData collisionData)
         {
             Vec2 end = start + direction * step;
             collisionData = new CollisionData(null, null, 0, new Vec2[] { start + direction * maxDistance }, Vec2.Zero, false);
@@ -736,7 +736,7 @@ namespace GXPEngine.PhysicsCore
                 foreach (Collider other in Physics.Colliders)
                 {
                     collisionDataBuffer = CollisionData.Empty;
-                    if (!other.Owner.CompareLayerMask(layerMask)) continue;
+                    if (layerMasks.Contains(other.Owner.LayerMask)) continue;
                     if (!ValidateExpediency(end, other, Settings.RaycastStep / 2)) continue;
                     if (other is PolygonCollider poly)
                         polygonLine(poly, start, end);
@@ -796,21 +796,20 @@ namespace GXPEngine.PhysicsCore
                 if (!hasCollision)
                     return;
 
-                if (attr is null)
-                    collisionNormal = (segmentEnd - segmentStart).normal;
-                else
+                collisionNormal = (segmentEnd - segmentStart).normal;
+                if(attr != null)
                 {
-                    float t = GetInterpolationFactor(collisionPoint, segmentStart, segmentEnd);
-
                     if (attr.LoopedSmoothing)
                     {
-                        if(attr.SmoothenedPoints)
+                        float t = GetInterpolationFactor(collisionPoint, segmentStart, segmentEnd);
+                        if (attr.SmoothenedPoints)
                             collisionPoint = self.CatmullRomPointLooped(p1i, p2i, t);
                         if (attr.SmoothenedNormals)
                             collisionNormal = self.CatmullRomNormalLooped(p1i, p2i, t);
                     }
                     else
                     {
+                        float t = GetInterpolationFactor(collisionPoint, segmentStart, segmentEnd);
                         if (attr.SmoothenedPoints)
                             collisionPoint = self.CatmullRomPoint(p1i, p2i, t);
                         if (attr.SmoothenedNormals)
