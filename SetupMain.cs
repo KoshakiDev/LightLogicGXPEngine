@@ -196,9 +196,6 @@ using System;
 
         level.AddChild(AssetManager.LoadAsset("LEVEL3"));
 
-        Sprite player = level.GetChildren()[0].FindGameObjectByName("Circle")[0] as Sprite;
-        player.AddComponent(typeof(Movable), args: new string[] { });
-
         #endregion
 
         Camera.SetLevel(level);

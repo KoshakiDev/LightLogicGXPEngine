@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33627.172
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GXPEngine", "GXPEngine.csproj", "{B5126D4C-7FE0-4552-BC8C-E68D529C22B2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		GXP-Project|x86 = GXP-Project|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B5126D4C-7FE0-4552-BC8C-E68D529C22B2}.Debug|x86.ActiveCfg = Debug|x86
+		{B5126D4C-7FE0-4552-BC8C-E68D529C22B2}.Debug|x86.Build.0 = Debug|x86
+		{B5126D4C-7FE0-4552-BC8C-E68D529C22B2}.GXP-Project|x86.ActiveCfg = GXP-Project|x86
+		{B5126D4C-7FE0-4552-BC8C-E68D529C22B2}.GXP-Project|x86.Build.0 = GXP-Project|x86
+		{B5126D4C-7FE0-4552-BC8C-E68D529C22B2}.Release|x86.ActiveCfg = Release|x86
+		{B5126D4C-7FE0-4552-BC8C-E68D529C22B2}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2DFC40B6-9A78-4033-BDF6-28A9D7786F68}
+	EndGlobalSection
+EndGlobal

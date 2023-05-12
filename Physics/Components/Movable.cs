@@ -1,6 +1,5 @@
 ﻿using GXPEngine;
 using System;
-using System.Windows.Forms.VisualStyles;
 
 [Serializable]
 public class Movable : Component, IRefreshable
@@ -16,17 +15,13 @@ public class Movable : Component, IRefreshable
     Vec2 relativePoint1 = Vec2.Zero;
     Vec2 relativePoint2 = Vec2.Zero;
 
-    public Movable(GameObject owner, params string[] args) : base(owner)
-    {
-
-    }
-
-
+    public Movable(GameObject owner, params string[] args) : base(owner){}
 
     public override void Refresh()
     {
         base.Refresh();
         SubscribeToInput();
+
         relativePoint1 = Owner.position + Point1;
         relativePoint2 = Owner.position + Point2;
     }
@@ -43,8 +38,10 @@ public class Movable : Component, IRefreshable
         Vec2 pointOnLine = Vec2.ClampPoint(Input.mouseWorldPosition, relativePoint1, relativePoint2);
         Vec2 rotateTowards = Input.mouseWorldPosition - pointOnLine;
 
+        //TODO fix rotation as well
+
         if (!MovementLock) Owner.SetXY(pointOnLine);
-        if (!RotationLock) Owner.rotation = rotateTowards.angleInDeg;
+        if (!RotationLock) Owner.rotation = (Input.mouseWorldPosition.y - pointOnLine.y) * 0.2f;
     }
 
     void ChangeSelection()

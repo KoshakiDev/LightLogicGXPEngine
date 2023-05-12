@@ -115,12 +115,13 @@ using System.Collections.Generic;
     //Added by Zhangir
     public static Vec2 ClampPoint(Vec2 point, Vec2 segmentStart, Vec2 segmentEnd)
     {
-        return ClampProjection(ProjectPoint(point, segmentStart, segmentEnd), segmentStart, segmentEnd);
+        //TODO rember to fix and not just set Y the same!!!!
+        return new Vec2(ClampProjection(ProjectPoint(new Vec2(point.x - 400, segmentStart.y+ 800), segmentStart, segmentEnd), segmentStart, segmentEnd).x, segmentStart.y);
     }
 
     public static Vec2 ProjectPoint(Vec2 point, Vec2 segmentStart, Vec2 segmentEnd)
     {
-        return segmentStart + Vec2.DotSecondNormalized(point - segmentStart, segmentEnd - segmentStart);
+        return (segmentEnd - segmentStart) * Dot((point - segmentStart).normalized, (segmentEnd - segmentStart).normalized);
     }
 
     private static Vec2 ClampProjection(Vec2 point, Vec2 start, Vec2 end)
