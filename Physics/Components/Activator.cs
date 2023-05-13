@@ -1,16 +1,14 @@
 ﻿using GXPEngine;
 using System;
-using System.Windows.Forms.VisualStyles;
 
 [Serializable]
-public class Prism : Component, IRefreshable
+public class Activate: Component
 {
-    public Prism(GameObject owner, params string[] args) : base(owner)
+    public string Key { get; protected set; }
+    public Activate(GameObject owner): base(owner)
     {
 
-    }    
-
-
+    }
     public override void Refresh()
     {
         base.Refresh();

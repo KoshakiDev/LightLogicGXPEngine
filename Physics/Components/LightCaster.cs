@@ -24,6 +24,20 @@ public class LightCaster: Component
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
         ActiveLayerMasks = args;
+
+
+        //TODO: rewrite the player's default values for active layer masks
+        /*
+        string[] args1 = {
+            "Default",
+            "Walls",
+            "Mirrors",
+            "Prisms"
+        };
+        */
+
+        //ActiveLayerMasks = args1;
+        
     }
     protected override void Update()
     {
@@ -74,11 +88,10 @@ public class LightCaster: Component
             }
             if (!collision || !checkLayers(ActiveLayerMasks, collisionData.self?.LayerMask)) break;
 
-            collisionData.self.TryGetComponent(typeof(Prism), out Component prismComponent);
             collisionData.self.TryGetComponent(typeof(ColliderSurfaceAttributes), out Component attrComponent);
 
             
-            if (color == LightColor.WHITE && prismComponent != null)
+            if (color == LightColor.WHITE && collisionData.self.LayerMask == "Prisms")
             {
                 #region Divide into 3 rays (only once)
                 
@@ -101,7 +114,7 @@ public class LightCaster: Component
                 break;
                 #endregion
             }
-            else if (prismComponent != null)
+            else if (collisionData.self.LayerMask == "Prisms")
             {
                 #region Pass through prism
 
@@ -143,6 +156,7 @@ public class LightCaster: Component
                 _reflectCount++;
                 #endregion
             }
+
             bool checkLayers(string[] layers, string layerToCheck)
             {
                 if (layers is null || layers.Length == 0)
