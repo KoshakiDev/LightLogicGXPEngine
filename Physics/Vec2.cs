@@ -120,7 +120,7 @@ using System.Collections.Generic;
 
     public static Vec2 ProjectPoint(Vec2 point, Vec2 segmentStart, Vec2 segmentEnd)
     {
-        return segmentStart + Vec2.DotSecondNormalized(point - segmentStart, segmentEnd - segmentStart);
+        return segmentStart - Vec2.Dot(point - segmentStart, segmentEnd - segmentStart);
     }
 
     private static Vec2 ClampProjection(Vec2 point, Vec2 start, Vec2 end)
