@@ -342,13 +342,10 @@ public static class GXPAssetEditor
             if (FileDialog.ShowDialog() == DialogResult.OK)
             {
                 GameObject loadedAsset = AssetManager.LoadAsset(FileDialog.FileName, true);
-                loadedAsset.SetXY(0, 0);
-                loadedAsset.SetScaleXY(1, 1);
-                loadedAsset.rotation = 0;
 
                 Selection.DocumentObject.AddChild(loadedAsset);
                 TryOutliningGameObject(loadedAsset, false);
-                loadedAsset.SetXY(0, 0);
+                loadedAsset.SetXY(Input.mouseWorldPosition.x, Input.mouseWorldPosition.y);
                 loadedAsset.SetScaleXY(1, 1);
                 loadedAsset.rotation = 0;
 

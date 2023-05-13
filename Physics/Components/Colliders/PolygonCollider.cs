@@ -2,18 +2,19 @@
 using System;
 using System.Collections.Generic;
 
-[Serializable] public class PolygonCollider : Collider
-{ 
-	public Vec2[] Points { get; protected set; }
+[Serializable]
+public class PolygonCollider : Collider
+{
+    public Vec2[] Points { get; protected set; }
     public Vec2[] TransformedPoints
     {
         get
         {
             Vec2[] transformedPoints = new Vec2[Points.Length];
-            Vec2 origin = new Vec2(Owner.x, Owner.y) * Owner.parent.TransformedScale();
+            Vec2 origin = new Vec2(Owner.x, Owner.y);
             for (int i = 0; i < transformedPoints.Length; i++)
             {
-                transformedPoints[i] = Points[i] * Owner.TransformedScale() + origin;
+                transformedPoints[i] = Points[i] * Owner.scale + origin;
                 transformedPoints[i].RotateAroundDegrees(Owner.rotation, origin);
             }
             return transformedPoints;
@@ -24,12 +25,12 @@ using System.Collections.Generic;
         get
         {
             Vec2[] debugPoints = new Vec2[Points.Length];
-            Vec2 origin = new Vec2(Owner.y * Owner.parent.TransformedScale().y, Owner.x * Owner.parent.TransformedScale().x);
+            Vec2 origin = new Vec2(Owner.y, Owner.x);
             for (int i = 0; i < debugPoints.Length; i++)
             {
-                debugPoints[i] = new Vec2(Points[i].x * Owner.TransformedScale().x + origin.x, origin.y - Points[i].y * Owner.TransformedScale().y);
+                debugPoints[i] = new Vec2(Points[i].x * Owner.scale.x + origin.x, origin.y - Points[i].y * Owner.scale.y);
                 debugPoints[i].RotateAroundDegrees(-Owner.rotation + 90, origin);
-                debugPoints[i] += new Vec2(Camera.Position.y , Camera.Position.x);
+                debugPoints[i] += new Vec2(Camera.Position.y, Camera.Position.x);
             }
             return debugPoints;
         }
@@ -48,7 +49,7 @@ using System.Collections.Generic;
         }
         return (mass * sum1) / (6f * sum2);
     }
-    public PolygonCollider(GameObject owner, params string[] args) : base(owner)  
+    public PolygonCollider(GameObject owner, params string[] args) : base(owner)
     {
         IsTrigger = args.Length > 0 && bool.Parse(args[0]);
 
@@ -119,7 +120,7 @@ using System.Collections.Generic;
     }
     public Vec2 CatmullRomPointLooped(int p1i, int p2i, float t)
     {
-        t = t > 1? 1 : (t < 0 ? 0 : t);
+        t = t > 1 ? 1 : (t < 0 ? 0 : t);
         Vec2 p0 = p1i > 0 ? TransformedPoints[p1i - 1] : TransformedPoints[Points.Length - 1];
         Vec2 p1 = TransformedPoints[p1i];
         Vec2 p2 = TransformedPoints[p2i];
@@ -151,13 +152,13 @@ using System.Collections.Generic;
 
         Settings.ColliderDebug.Stroke(255, 255, 255);
         float[] pointCoordinates = new float[DebugPoints.Length * 2];
-        for (int i = 0; i < DebugPoints.Length; i++) 
+        for (int i = 0; i < DebugPoints.Length; i++)
         {
             Vec2 rotatedCoordinates = new Vec2(DebugPoints[i].x, DebugPoints[i].y);
-            pointCoordinates[((i + 1) * 2) - 1] = rotatedCoordinates.x ;
-            pointCoordinates[i * 2] = rotatedCoordinates.y ;
+            pointCoordinates[((i + 1) * 2) - 1] = rotatedCoordinates.x;
+            pointCoordinates[i * 2] = rotatedCoordinates.y;
         }
-        Settings.ColliderDebug.Polygon(pointCoordinates);      
+        Settings.ColliderDebug.Polygon(pointCoordinates);
     }
     public override void ShowEditorDebug()
     {
@@ -173,5 +174,3 @@ using System.Collections.Generic;
 
     protected virtual void RefreshPoints() { }
 }
-
-

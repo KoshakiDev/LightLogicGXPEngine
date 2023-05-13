@@ -43,7 +43,6 @@ using System;
                 "Walls",
                 "Mirrors",
                 "GUI",
-                "Prisms"
             });
         }
         void unitTests()
@@ -145,8 +144,6 @@ using System;
         MainLayer.AddChild(DocumentPointer = AssetManager.LoadAsset("pointer"));
         #endregion
 
-        /*
-
         #region Post-processing
 
         PostProcessing.AddChildren(new GameObject[]
@@ -156,7 +153,6 @@ using System;
         });
         
         #endregion
-        */
         
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
@@ -198,36 +194,9 @@ using System;
         Sprite level = new Sprite("Empty") { };
         MainLayer.AddChild(level);
 
-        level.AddChild(AssetManager.LoadAsset("CURRENTLEVEL"));
-
-        Sprite player = level.GetChildren()[0].FindGameObjectByName("Circle")[0] as Sprite;
-
-        player.AddComponent(typeof(Movable), args: new string[] { });
-
+        level.AddChild(AssetManager.LoadAsset("colliderTest"));
 
         #endregion
-
-
-        /*
-        Sprite prism = new Sprite("prism");
-        prism.SetLayerMask("Prisms");
-
-        prism.AddComponent(typeof(PolygonCollider), args: new string[] 
-            {
-                "false",
-                "13",
-                "0",
-                "0",
-                "21",
-                "25",
-                "21"
-            }
-        );
-
-        AssetManager.UpdateAsset("prism", prism);
-
-        level.AddChild(prism);
-        */
 
         Camera.SetLevel(level);
         Camera.AddFocus(DocumentPointer);
