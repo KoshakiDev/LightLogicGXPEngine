@@ -80,7 +80,6 @@ public class LightCaster: Component
             
             if (color == LightColor.WHITE && prismComponent != null)
             {
-                Debug.Log("hit prism");
                 #region Divide into 3 rays (only once)
                 
                 Vec2 d1 = direction;
