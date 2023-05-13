@@ -29,6 +29,7 @@ public static class InputManager
 
         if (Input.GetKey(Key.S) && Input.GetKeyDown(Key.LEFT_CTRL)) OnSaveCombination?.Invoke();
         if (Input.GetKey(Key.D) && Input.GetKeyDown(Key.LEFT_CTRL)) Debug.Log(Settings.Setup.GetDiagnostics());
+        if (Input.GetKey(Key.P) && Input.GetKeyDown(Key.LEFT_CTRL)) Setup.PostProcessing.visible = !Setup.PostProcessing.visible;
         if (Input.GetKey(Key.A) && Input.GetKeyDown(Key.LEFT_CTRL)) OnAddCombination?.Invoke();
 
         if (Input.GetKey(Key.DOWN)) OnUpButtonPressed?.Invoke();

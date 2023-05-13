@@ -23,21 +23,7 @@ public class LightCaster: Component
     private int _reflectCount = 0;
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
-        ActiveLayerMasks = args;
-
-
-        //TODO: rewrite the player's default values for active layer masks
-        /*
-        string[] args1 = {
-            "Default",
-            "Walls",
-            "Mirrors",
-            "Prisms"
-        };
-        */
-
-        //ActiveLayerMasks = args1;
-        
+        ActiveLayerMasks = args;      
     }
     protected override void Update()
     {
