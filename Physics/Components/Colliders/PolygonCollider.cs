@@ -58,8 +58,10 @@ public class PolygonCollider : Collider
             for (int i = 1; i < args.Length - 1; i += 2)
                 pointsBuffer.Add(new Vec2(float.Parse(args[i]), float.Parse(args[i + 1])));
         else
+        {
             pointsBuffer.Add(Vec2.Zero);
-
+            pointsBuffer.Add(Vec2.Zero);
+        }
         Points = pointsBuffer.ToArray();
     }
     public override float CalculateActiveRadius()
