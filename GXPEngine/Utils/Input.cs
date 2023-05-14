@@ -115,16 +115,22 @@ namespace GXPEngine
 		{
 			get
 			{
-				return new Vec2(Input.mouseX, Input.mouseY);
+				return new Vec2(mouseX, mouseY);
 			}
 		}
 		public static Vec2 mouseWorldPosition
 		{
 			get 
 			{
-                //TODO: Ask Kiril why I should multiply the camera position by -1
-                return Input.mouseScreenPosition + (-1 * Camera.Position);
+                return mouseScreenPosition + (-1 * Camera.Position);
             }
+		}
+		public static Vec2 mouseViewPosition
+		{
+			get
+			{
+				return mouseScreenPosition + Camera.Position;
+			}
 		}
 	}
 }

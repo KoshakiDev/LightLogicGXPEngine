@@ -11,6 +11,12 @@ public static class GXPAssetEditor
     [NonSerialized] public static Font EditorFont;
     [NonSerialized] private static Sprite _darkening;
 
+    [NonSerialized] private static PolygonCollider _colliderBuffer;
+    [NonSerialized] private static Vec2[] _colliderPointsBuffer;
+    [NonSerialized] private static PropertyInfo _pointsInfo;
+    [NonSerialized] private static int _selectedPointId = -1;
+    [NonSerialized] private static Sprite _editColliderParent;
+
     public static void Start(string filename)
     {
         try{EditorFont = Utils.LoadFont(Settings.AssetsPath + "DOS.ttf", 12);}
@@ -280,6 +286,22 @@ public static class GXPAssetEditor
             x = 310,
             y = 100,
         });
+        if (typeof(PolygonCollider).IsAssignableFrom(component.GetType()))
+        {
+            fieldNameList.Add(new ConstValueDisplayer<string>("Collider points:", 320, 50)
+            {
+                color = 0xff0000,
+                font = EditorFont,
+            });
+            fieldChangeList.Add(new GUIButton("element_base", () => OpenEditCollider(component as PolygonCollider), layerMask: "GUI"));
+            fieldChangeList2.Add(new Sprite("Empty"));
+            fieldValueList.Add(new ConstValueDisplayer<string>("Edit", 320, 50)
+            {
+                color = 0xffbb00,
+                font = EditorFont,
+            });
+            fieldValueList2.Add(new Sprite("Empty"));
+        }
         PropertyInfo[] properties = component.GetType().GetProperties();
         foreach (PropertyInfo property in properties)
         {
@@ -409,6 +431,110 @@ public static class GXPAssetEditor
             _darkening.Destroy();
             Setup.ComponentList.visible = false;
             Setup.ComponentList.DestroyChildren();
+        }
+    }
+    public static void OpenEditCollider(PolygonCollider polygonCollider)
+    {
+        CloseComponentBox();
+        UnsubscribeEditor();
+
+        _colliderBuffer = polygonCollider;
+        _colliderPointsBuffer = new Vec2[_colliderBuffer.Points.Length];
+        polygonCollider.Points.CopyTo(_colliderPointsBuffer, 0);
+        _pointsInfo = typeof(PolygonCollider).GetProperty("Points", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        Setup.GUI.AddChild(_editColliderParent = new Sprite("Empty"));
+
+        _editColliderParent.AddChild(new ConstValueDisplayer<string>(
+            "[EDIT MODE] \n" +
+            " To move points drag&drop them with LMB\n" +
+            " To add point press 'RMB'\n" +
+            " To remove point press 'Ctrl+RMB'\n" +
+            " To apply changes press 'Enter'\n" +
+            " To discard changes press 'Backspace'", 400, 400)
+        {
+            x = 200,
+            y = 290,
+            color = 0xff0000,
+            font = EditorFont,
+        });
+        Settings.Setup.OnBeforeStep += UpdateEditMode;
+    }
+    private static void CloseEditCollider(bool result)
+    {
+        _editColliderParent.Destroy();
+        if (!result)
+        {
+            try {_pointsInfo.SetValue(_colliderBuffer, _colliderPointsBuffer);}
+            catch {}
+        }
+        SubscribeEditor();
+        Settings.Setup.OnBeforeStep -= UpdateEditMode;
+    }
+    private static void UpdateEditMode()
+    {
+        Settings.ColliderDebug.Ellipse(_colliderBuffer.WorldToLocal(Input.mouseWorldPosition).x, _colliderBuffer.WorldToLocal(Input.mouseWorldPosition).y, 30, 30);
+        if (Input.GetKeyDown(Key.BACKSPACE))
+            CloseEditCollider(false);
+        else if (Input.GetKeyDown(Key.ENTER))
+            CloseEditCollider(true);
+        else if (Input.GetMouseButtonDown(1))
+        {
+            if(Input.GetKey(Key.LEFT_CTRL)) 
+            try
+            {
+                if (_colliderBuffer.Points.Length <= 2)
+                    return;
+                Vec2[] enlargedPointBuffer = new Vec2[_colliderBuffer.Points.Length - 1];
+                    for (int i = 0; i < enlargedPointBuffer.Length; i++)
+                        enlargedPointBuffer[i] = _colliderBuffer.Points[i];
+                _pointsInfo.SetValue(_colliderBuffer, enlargedPointBuffer);
+            }
+            catch { }
+            else try
+            {
+                Vec2[] enlargedPointBuffer = new Vec2[_colliderBuffer.Points.Length + 1];
+                _colliderBuffer.Points.CopyTo(enlargedPointBuffer, 0);
+                Vec2 relativeMouse = Input.mouseWorldPosition - _colliderBuffer.Owner.position;
+                relativeMouse.RotateDegrees(_colliderBuffer.Owner.rotation + 90);
+                relativeMouse *= new Vec2(_colliderBuffer.Owner.scaleX, _colliderBuffer.Owner.scaleY) ^ -1;
+                enlargedPointBuffer[enlargedPointBuffer.Length - 1] = relativeMouse;
+                _pointsInfo.SetValue(_colliderBuffer, enlargedPointBuffer);
+            }
+            catch { }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            if (_selectedPointId != -1)
+            {
+                _selectedPointId = -1;
+                return;
+            }
+            float minDistance = float.MaxValue;
+            int pointId = 0;
+            for (int i = 0; i < _colliderBuffer.Points.Length; i++)
+            {
+                float distance = Vec2.Distance(_colliderBuffer.TransformedPoints[i], Input.mouseWorldPosition);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    pointId = i;
+                }
+            }
+            if (minDistance > 20)
+                return;
+            else
+                _selectedPointId = pointId;
+        }
+        else 
+        {
+            if (_selectedPointId == -1)
+                return;
+
+            Vec2 relativeDelta = InputManager.MouseDelta;
+            relativeDelta.RotateDegrees(_colliderBuffer.Owner.rotation - 90);
+            relativeDelta *= new Vec2(_colliderBuffer.Owner.scaleX, _colliderBuffer.Owner.scaleY) ^ -1;
+            _colliderBuffer.Points[_selectedPointId] += relativeDelta * 0.5f;
         }
     }
 }

@@ -79,6 +79,26 @@ public class PolygonCollider : Collider
         return maxDistance;
     }
 
+    public Vec2 WorldToLocal(Vec2 point)
+    {
+        Vec2 origin = new Vec2(Owner.x, Owner.y);
+        Vec2 inverseScale = Owner.scale ^ -1f;
+        float inverseRotation = -Owner.rotation;
+
+        point.RotateAroundDegrees(inverseRotation, origin);
+        point -= origin;
+        point *= inverseScale;
+
+        return point;
+    }
+    public Vec2 WorldToRelative(Vec2 point)
+    {
+        Vec2 origin = new Vec2(Owner.x, Owner.y);
+        float inverseRotation = -Owner.rotation;
+        point.RotateAroundDegrees(inverseRotation, origin);
+        return point;
+    }
+
     public Vec2[] GetAxes()
     {
         Vec2[] axes = new Vec2[Points.Length];
