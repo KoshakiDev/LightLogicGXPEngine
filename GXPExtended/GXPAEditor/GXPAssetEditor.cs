@@ -473,7 +473,6 @@ public static class GXPAssetEditor
     }
     private static void UpdateEditMode()
     {
-        Settings.ColliderDebug.Ellipse(_colliderBuffer.WorldToLocal(Input.mouseWorldPosition).x, _colliderBuffer.WorldToLocal(Input.mouseWorldPosition).y, 30, 30);
         if (Input.GetKeyDown(Key.BACKSPACE))
             CloseEditCollider(false);
         else if (Input.GetKeyDown(Key.ENTER))
@@ -496,7 +495,7 @@ public static class GXPAssetEditor
                 Vec2[] enlargedPointBuffer = new Vec2[_colliderBuffer.Points.Length + 1];
                 _colliderBuffer.Points.CopyTo(enlargedPointBuffer, 0);
                 Vec2 relativeMouse = Input.mouseWorldPosition - _colliderBuffer.Owner.position;
-                relativeMouse.RotateDegrees(_colliderBuffer.Owner.rotation + 90);
+                relativeMouse.RotateDegrees(-_colliderBuffer.Owner.rotation);
                 relativeMouse *= new Vec2(_colliderBuffer.Owner.scaleX, _colliderBuffer.Owner.scaleY) ^ -1;
                 enlargedPointBuffer[enlargedPointBuffer.Length - 1] = relativeMouse;
                 _pointsInfo.SetValue(_colliderBuffer, enlargedPointBuffer);
@@ -532,9 +531,9 @@ public static class GXPAssetEditor
                 return;
 
             Vec2 relativeDelta = InputManager.MouseDelta;
-            relativeDelta.RotateDegrees(_colliderBuffer.Owner.rotation - 90);
+            relativeDelta.RotateDegrees(_colliderBuffer.Owner.rotation);
             relativeDelta *= new Vec2(_colliderBuffer.Owner.scaleX, _colliderBuffer.Owner.scaleY) ^ -1;
-            _colliderBuffer.Points[_selectedPointId] += relativeDelta * 0.5f;
+            _colliderBuffer.Points[_selectedPointId] += relativeDelta.inverted * 0.5f;
         }
     }
 }

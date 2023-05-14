@@ -2,10 +2,10 @@
 using System;
 
 [Serializable]
-public class Actuate : Component
+public class Actuator : Component
 {
     public string Key { get; protected set; }
-    public Actuate(GameObject owner) : base(owner)
+    public Actuator(GameObject owner) : base(owner)
     {
 
     }

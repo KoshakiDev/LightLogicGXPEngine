@@ -799,7 +799,7 @@ namespace GXPEngine
         {
             if (!_components.ContainsKey(type.Name))
             {
-                Component component = (Component)Activator.CreateInstance(type, new object[] { this, args });
+                Component component = (Component)System.Activator.CreateInstance(type, new object[] { this, args });
                 Physics.Add(component);
                 _components.Add(type.Name, component);
 

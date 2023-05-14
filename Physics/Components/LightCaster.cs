@@ -1,15 +1,16 @@
 ﻿using GXPEngine;
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class LightCaster: Component
 {
     private enum LightColor
     {
-        RED = 1,
-        GREEN = 2,
-        BLUE = 3,
-        WHITE = 0
+        RED = 0xff0000,
+        GREEN = 0x00ff00,
+        BLUE = 0x0000ff,
+        WHITE = 0xffffff
     }
 
     private const int MAX_RAY_DISTANCE = 1200;
@@ -21,6 +22,7 @@ public class LightCaster: Component
     public string[] ActiveLayerMasks;
 
     private int _reflectCount = 0;
+    private List<Sprite> _rays = new List<Sprite>();
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
         ActiveLayerMasks = args;      
@@ -28,59 +30,47 @@ public class LightCaster: Component
     protected override void Update()
     {
         base.Update();
+        ClearRays();
 
         Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
         Vec2 startPosition = Owner.position;
+
+        Sprite collisionPoint = new Sprite("laser_collision");
+        Setup.MainLayer.AddChild(collisionPoint);
+
+        collisionPoint.SetXY(startPosition);
+        collisionPoint.SetOrigin(collisionPoint.width / 2, collisionPoint.height / 2);
+
+        _rays.Add(collisionPoint);
         _reflectCount = 0;
 
-        Raycast(startPosition, direction, LightColor.WHITE);
+        Raycast(startPosition, direction, LightColor.WHITE, collisionPoint.Index);
     }
 
-    private void Raycast(Vec2 startPosition, Vec2 direction, LightColor color)
+    private void Raycast(Vec2 startPosition, Vec2 direction, LightColor color, int order)
     {
         Vec2 visualOffset = Vec2.Zero;
         while (true)
         {
             bool collision = Physics.Collision.Raycast(startPosition, direction, Settings.RaycastStep, MAX_RAY_DISTANCE, out CollisionData collisionData);
 
-            if (_reflectCount > MAX_REFLECT_COUNT) break;
-            if (Settings.CollisionDebug)
-            {
-                Settings.ColliderDebug.StrokeWeight(4);
-
-                switch (color)
-                {
-                    case LightColor.RED:
-                        Settings.ColliderDebug.Stroke(255, 0, 0);
-                        break;
-                    case LightColor.GREEN:
-                        Settings.ColliderDebug.Stroke(0, 255, 0);
-                        break;
-                    case LightColor.BLUE:
-                        Settings.ColliderDebug.Stroke(0, 0, 255);
-                        break;
-                    default:
-                        Settings.ColliderDebug.Stroke(255);
-                        break;
-                }
-                Settings.ColliderDebug.Line
-                    (
-                    startPosition.x - visualOffset.x + Camera.Position.x,
-                    startPosition.y - visualOffset.y + Camera.Position.y,
-                    collisionData.collisionPoints[0].x  + Camera.Position.x,
-                    collisionData.collisionPoints[0].y  + Camera.Position.y
-                    );
-                Settings.ColliderDebug.StrokeWeight(1);
-            }
-            if (!collision || !checkLayers(ActiveLayerMasks, collisionData.self?.LayerMask)) break;
-
+            if (_reflectCount > MAX_REFLECT_COUNT) 
+                break;
+            visualize();
+            if (!collision) break;
             collisionData.self.TryGetComponent(typeof(ColliderSurfaceAttributes), out Component attrComponent);
-
             
+            if(collisionData.self.LayerMask == "Finish")
+            {
+                Debug.Log("Sensor've got hit!");
+                //Settings.Setup.Exit();
+                return;
+            }
+
             if (color == LightColor.WHITE && collisionData.self.LayerMask == "Prisms")
             {
                 #region Divide into 3 rays (only once)
-                
+
                 Vec2 d1 = direction;
                 Vec2 d2 = direction;
                 Vec2 d3 = direction;
@@ -88,13 +78,13 @@ public class LightCaster: Component
                 startPosition = collisionData.collisionPoints[0] + direction.normalized;
 
                 d1.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, IOR_RED));
-                Raycast(startPosition, d1, LightColor.RED);
+                Raycast(startPosition, d1, LightColor.RED, order);
 
                 d2.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, IOR_GREEN));
-                Raycast(startPosition, d2, LightColor.GREEN);
+                Raycast(startPosition, d2, LightColor.GREEN, order);
 
                 d3.RotateRadians(GetAngleOfRefractionInRadians(direction, collisionData.collisionNormal, IOR_BLUE));
-                Raycast(startPosition, d3, LightColor.BLUE);
+                Raycast(startPosition, d3, LightColor.BLUE, order);
 
                 _reflectCount++;
                 break;
@@ -122,7 +112,7 @@ public class LightCaster: Component
                 _reflectCount++;
                 #endregion
             }
-            else if (attrComponent != null && (attrComponent as ColliderSurfaceAttributes).TrespassingNormals)
+            else if (collisionData.self.LayerMask == "Mirrors" && attrComponent != null && (attrComponent as ColliderSurfaceAttributes).TrespassingNormals)
             {
                 #region Pass through lens
                 collisionData.collisionNormal = collisionData.isInside ? collisionData.collisionNormal.inverted : collisionData.collisionNormal;
@@ -133,7 +123,7 @@ public class LightCaster: Component
                 _reflectCount++;
                 #endregion
             }
-            else
+            else if (collisionData.self.LayerMask == "Mirrors")
             {
                 #region Bounce Off
                 startPosition = collisionData.collisionPoints[0] + collisionData.collisionNormal * 8;
@@ -142,19 +132,55 @@ public class LightCaster: Component
                 _reflectCount++;
                 #endregion
             }
+            else break;
 
-            bool checkLayers(string[] layers, string layerToCheck)
+            void visualize()
             {
-                if (layers is null || layers.Length == 0)
-                    return false;
-
-                foreach (string layer in layers)
-                {
-                    if (layer == layerToCheck)
-                        return true;
-                }
-                return false;
+                Vec2 start = startPosition - visualOffset;
+                Vec2 end = collisionData.collisionPoints[0];
+                Sprite ray = new Sprite("laser_segment");
+                Sprite rayLight = new Sprite("laser_light");
+                Sprite rayLight2 = new Sprite("laser_light2");
+                Sprite collisionPoint = new Sprite("laser_collision");
+                Sprite colLight = new Sprite("collision_light");
+                Sprite colLight2 = new Sprite("collision_light2");
+                Setup.MainLayer.AddChildAt(collisionPoint, order);
+                Setup.MainLayer.AddChildAt(ray, order);
+                ray.AddChild(rayLight);
+                ray.AddChild(rayLight2);
+                collisionPoint.AddChild(colLight);
+                collisionPoint.AddChild(colLight2);
+                collisionPoint.SetXY(end);
+                collisionPoint.SetOrigin(collisionPoint.width/2, collisionPoint.height / 2);
+                rayLight.blendMode = BlendMode.ADDITIVE;
+                rayLight2.blendMode = BlendMode.ADDITIVE;
+                colLight.blendMode = BlendMode.ADDITIVE;
+                colLight2.blendMode = BlendMode.ADDITIVE;
+                ray.SetXY(start);
+                ray.SetOrigin(0, ray.height / 2);
+                rayLight.SetOrigin(0, rayLight.height / 2);
+                rayLight2.SetOrigin(0, rayLight2.height / 2);
+                colLight.SetOrigin(colLight.width / 2, colLight.height / 2);
+                colLight2.SetOrigin(colLight2.width / 2, colLight2.height / 2);
+                ray.scaleX = Vec2.Distance(start, end);
+                ray.rotation = (end - start).angleInDeg + 90;
+                ray.color = (uint)color - 0x222222;
+                rayLight.color = (uint)color;
+                rayLight2.color = (uint)color;
+                collisionPoint.color = (uint)color - 0x222222;
+                colLight.color = (uint)color;
+                colLight2.color = (uint)color;
+                _rays.Add(ray);
+                _rays.Add(collisionPoint);
             }
+        }
+    }
+    private void ClearRays()
+    {
+        for (int i = 0; i < _rays.Count; i++)
+        {
+            _rays[0].Destroy();
+            _rays.RemoveAt(0);
         }
     }
     private float GetAngleOfRefractionInRadians(Vec2 directionOfIncidence, Vec2 normal, float refractiveIndex)

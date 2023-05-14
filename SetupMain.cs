@@ -11,8 +11,7 @@ using System;
 
     [STAThread] private static void Main() => new Setup();
     
-    
-    public Setup() : base(1280, 720, false, pPixelArt: false, pRealWidth: Settings.Screen.Width, pRealHeight: Settings.Screen.Height)
+    public Setup() : base(1280, 720, false, pPixelArt: false)
     {
         void settings()
         {
@@ -21,7 +20,7 @@ using System;
             Settings.ReadParameters();
             Settings.Volume = 0.8f;
             Settings.Fullscreen = false;
-            Settings.CollisionDebug = true;
+            Settings.CollisionDebug = false;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
             Settings.RaycastStep = 100;
@@ -148,8 +147,8 @@ using System;
 
         PostProcessing.AddChildren(new GameObject[]
         {
-            AssetManager.LoadAsset("screenEffect_MULT"),
-            AssetManager.LoadAsset("screenEffect_Add")
+            //AssetManager.LoadAsset("screenEffect_MULT"),
+            //AssetManager.LoadAsset("screenEffect_Add")
         });
         
         #endregion
@@ -191,14 +190,10 @@ using System;
         #endregion
 
         #region Setup level
-        Sprite level = new Sprite("Empty") { };
-        MainLayer.AddChild(level);
-
-        level.AddChild(AssetManager.LoadAsset("MechanicTestLevel"));
-
+        MainLayer.AddChild(AssetManager.LoadAsset("MechanicTestLevel"));
         #endregion
 
-        Camera.SetLevel(level);
+        Camera.SetLevel(MainLayer);
         Camera.AddFocus(DocumentPointer);
         Debug.Log("\n-----Start-----\n");
     }
