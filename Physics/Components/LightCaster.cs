@@ -23,9 +23,12 @@ public class LightCaster: Component
 
     private int _reflectCount = 0;
     private List<Sprite> _rays = new List<Sprite>();
+
+    public float Fuel { get; protected set; }
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
-        ActiveLayerMasks = args;      
+        ActiveLayerMasks = args;
+        Fuel = 100;
     }
     protected override void Update()
     {
@@ -44,7 +47,16 @@ public class LightCaster: Component
         _rays.Add(collisionPoint);
         _reflectCount = 0;
 
-        Raycast(startPosition, direction, LightColor.WHITE, collisionPoint.Index);
+        if (Input.GetMouseButton(1))
+        {
+            if (Fuel <= 0)
+                OnFuelEmpty();
+            Fuel -= Time.deltaTime / 1000f;
+
+            Debug.Log("fuel: " + Fuel);
+
+            Raycast(startPosition, direction, LightColor.WHITE, collisionPoint.Index);
+        }
     }
 
     private void Raycast(Vec2 startPosition, Vec2 direction, LightColor color, int order)
@@ -63,6 +75,7 @@ public class LightCaster: Component
             if(collisionData.self.LayerMask == "Finish")
             {
                 Debug.Log("Sensor've got hit!");
+
                 //Settings.Setup.Exit();
                 return;
             }
@@ -174,6 +187,10 @@ public class LightCaster: Component
                 _rays.Add(collisionPoint);
             }
         }
+    }
+    private void OnFuelEmpty()
+    {
+        Debug.Log("Fuel is empty, Game Over");
     }
     private void ClearRays()
     {
