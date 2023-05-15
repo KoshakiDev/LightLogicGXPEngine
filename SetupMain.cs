@@ -221,7 +221,7 @@ public class Setup : Game
         MainLayer.AddChild(gun_top);
 
         */
-        //Settings.CollisionDebug.Equals(true);
+        Settings.CollisionDebug.Equals(true);
 
 
         OpenMenu();
