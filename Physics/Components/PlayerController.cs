@@ -16,10 +16,10 @@ public class PlayerController : Component, IRefreshable
     {
         if (Owner.Rigidbody is null) return;
 
-        InputManager.OnUpButtonPressed += () => Owner.Rigidbody.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Up * Acceleration : Vec2.Zero);
-        InputManager.OnDownButtonPressed += () => Owner.Rigidbody.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Down * Acceleration : Vec2.Zero);
-        InputManager.OnLeftButtonPressed += () => Owner.Rigidbody.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Left * Acceleration : Vec2.Zero);
-        InputManager.OnRightButtonPressed += () => Owner.Rigidbody.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Right * Acceleration : Vec2.Zero);
+        InputManager.OnUpButtonPressed += () => Owner.Rigidbody?.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Up * Acceleration : Vec2.Zero);
+        InputManager.OnDownButtonPressed += () => Owner.Rigidbody?.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Down * Acceleration : Vec2.Zero);
+        InputManager.OnLeftButtonPressed += () => Owner.Rigidbody?.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Left * Acceleration : Vec2.Zero);
+        InputManager.OnRightButtonPressed += () => Owner.Rigidbody?.AddForce(Owner.Rigidbody.Velocity.length <= MaxSpeed ? Vec2.Right * Acceleration : Vec2.Zero);
     }
 
     public override void Refresh()

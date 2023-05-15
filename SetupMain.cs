@@ -165,9 +165,9 @@ public class Setup : Game
         }
         #endregion
 
-        LightLogicGame.Start();
         Camera.AddFocus(DocumentPointer);
         Camera.SetLevel(MainLayer);
+        LightLogicGame.Start();
         Debug.Log("\n-----Start-----\n");
     }
     public static void OpenEditor(string document)

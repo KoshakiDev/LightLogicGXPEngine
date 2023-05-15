@@ -46,7 +46,7 @@ public class LightCaster: Component
 
         if (Fuel <= 0)
             OnFuelEmpty();
-        Fuel -= Time.deltaTime / 1000f * 30;
+        Fuel -= Time.deltaTime / 1000f * 4;
 
         Vec2 startPosition = CalculateStartPosition(out Vec2 direction);
 
