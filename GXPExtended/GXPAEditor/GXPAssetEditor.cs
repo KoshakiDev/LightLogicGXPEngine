@@ -6,281 +6,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-
-public static class Selection
-{
-    public const int UNSELECTED = 0x757575;
-    public const int SELECTED = 0xFFFFFF;
-
-    public static string Filename;
-    public static GameObject DocumentObject;
-
-    private static GameObject _selectedGameObject;
-    public static GameObject SelectedGameObject
-    {
-        get => _selectedGameObject;
-        set
-        {
-            _selectedGameObject = value;
-            ClearComponents();
-
-            if (value is null)
-                return;
-
-            if (!_displayersSet)
-            {
-                InitSelectionBox();
-                _displayersSet = true;
-            }
-            _selectedName.Text(value.name.Length > 11 ? value.name.Substring(0, 9) + ".." : value.name, clear: true);
-            _selectedLayer.Text(value.LayerMask.Length > 11 ? value.LayerMask.Substring(0, 9) + ".." : value.LayerMask, clear: true);
-            RefreshComponents();
-        }
-    }
-    private static EasyDraw _selectedName, _selectedLayer;
-    private static VerticalList _componentList;
-    private static bool _displayersSet = false;
-
-    public static void Transform(Vec2 position, Vec2 scaleDelta, float rotationDelta = 0f)
-    {
-        if (SelectedGameObject is null)
-            return;
-
-        SelectedGameObject.SetScaleXY(SelectedGameObject.scaleX + scaleDelta.x, SelectedGameObject.scaleY + scaleDelta.y);
-        SelectedGameObject.SetXY(SelectedGameObject.x - position.x, SelectedGameObject.y - position.y);
-        SelectedGameObject.rotation += rotationDelta;
-    }
-
-    public static void InitSelectionBox()
-    {
-        Setup.SelectionBox.AddChild(_selectedName
-        = new EasyDraw(100, 50, layerMask: "GUI")
-        {
-            x = 60,
-            y = 14,
-            color = 0xffbb00,
-            font = GXPAssetEditor.EditorFont,
-        });
-        Setup.SelectionBox.AddChild(_selectedLayer
-        = new EasyDraw(100, 50, layerMask: "GUI")
-        {
-            x = 60,
-            y = 30,
-            color = 0xffbb00,
-            font = GXPAssetEditor.EditorFont
-        });
-        Setup.SelectionBox.AddChild(
-        new GUIButton("plus_icon",
-        action: () => GXPAssetEditor.OpenAddComponent(SelectedGameObject),
-        layerMask: "GUI")
-        {
-            x = 144,
-            y = 380,
-        });
-        Setup.SelectionBox.AddChild(_componentList =
-        new VerticalList(21, layerMask: "GUI")
-        {
-            x = 86,
-            y = 128,
-        });
-    }
-    private static void ClearComponents()
-    {
-        if (_componentList is null)
-            return;
-
-        _componentList.Clear();
-    }
-    public static void RefreshComponents()
-    {
-        if (SelectedGameObject is null)
-            return;
-
-        _componentList.Clear();
-        Component[] components = SelectedGameObject.GetAllComponents();
-        GUIButton[] elements = new GUIButton[components.Length];
-        for (int i = 0; i < components.Length; i++)
-        {
-            Component component = components[i];
-            string componentName = component.GetType().Name;
-            elements[i] = new GUIButton("element_base", action: () => GXPAssetEditor.OpenComponentBox(component), layerMask: "GUI");
-            elements[i].AddChild(new ConstValueDisplayer<string>(componentName.Length > 14 ? componentName.Substring(0, 12) + ".." : componentName, 130, 18)
-            {
-                x = -66,
-                y = -8,
-                color = 0xffbb00,
-                font = GXPAssetEditor.EditorFont,
-                HorizontalShapeAlign = CenterMode.Center,
-                VerticalShapeAlign = CenterMode.Center
-            });
-            elements[i].AddChild(
-            new GUIButton("solid_minus_icon",
-            action: () => showEditorDebug(component),
-            layerMask: "GUI")
-            {
-                x = 83,
-                y = 0,
-                scale = new Vec2(0.8f, 0.8f)
-            });
-        }
-        _componentList.Add(elements);
-        void showEditorDebug(Component component)
-        {
-            if (component is Collider)
-            {
-                Settings.Setup.OnBeforeStep -= SelectedGameObject.Collider.ShowEditorDebug;
-
-                foreach (GameObject child in SelectedGameObject.GetChildren())
-                    Settings.Setup.OnBeforeStep -= child.Collider.ShowEditorDebug;
-            }
-            SelectedGameObject.RemoveComponent(component);
-            RefreshComponents();
-        }
-    }
-    public static void SelectionBoxSetVisible(bool visible)
-    {
-        Setup.SelectionBox.visible = visible;
-    }
-}
-public static class WaitForPropertyInput
-{
-    private static int _instanceCount = 0;
-    public static string Text;
-
-    private static object _obj;
-    private static PropertyInfo _property;
-    private static Sprite _base, _back;
-    private static ValueDisplayer<string> _foreground;
-
-    private static bool _isX;
-    private static bool _isVector2;
-
-    public static void Try(PropertyInfo property, object obj, bool isVector2 = false, bool isX = true)
-    {
-        if (_instanceCount > 0)
-            return;
-
-        Text = !isVector2 ? property.GetValue(obj).ToString()
-            : (isX ? ((Vec2)property.GetValue(obj)).x.ToString()
-            : ((Vec2)property.GetValue(obj)).y.ToString());
-        _obj = obj;
-        _property = property;
-        _isX = isX;
-        _isVector2 = isVector2;
-
-        Setup.GUI.AddChild(
-        _back = new Sprite("block")
-        {
-            scaleX = Settings.Setup.width,
-            scaleY = Settings.Setup.height,
-            color = 0x000000,
-            alpha = 0.7f
-        });
-
-        Setup.GUI.AddChild(
-        _base = new Sprite("value_entry")
-        {
-            x = 540 + _instanceCount * 30,
-            y = 320 + _instanceCount * 30
-        });
-
-        _base.AddChild(
-        _foreground = new ValueDisplayer<string>(() => Text, 285, 30)
-        {
-            x = 22,
-            y = 45,
-            color = 0xffbb00,
-            font = GXPAssetEditor.EditorFont,
-            HorizontalTextAlign = CenterMode.Center
-        });
-
-        _base.AddChild(
-        new ConstValueDisplayer<string>("<press 'ENTER' to save value>", 285, 30)
-        {
-            x = 22,
-            y = 70,
-            color = 0xff0000,
-            font = GXPAssetEditor.EditorFont,
-            HorizontalTextAlign = CenterMode.Center
-        });
-        _base.AddChild(
-        new GUIButton("minus_icon", action: () => Finish(false), layerMask: "GUI")
-        {
-            x = 308,
-            y = 21,
-        });
-
-        Settings.Setup.OnBeforeStep += ListenInput;
-        _instanceCount++;
-    }
-    private static void ListenInput()
-    {
-        if (Input.GetKeyDown(Key.BACKSPACE))
-            Backspace();
-        else if (Input.GetKeyDown(Key.ENTER) || Input.GetKeyDown(Key.NUMPAD_ENTER))
-            Finish(true);
-        else if (Input.GetKeyDown(Key.ESCAPE))
-            Finish(false);
-        else if (Input.AnyKeyDown())
-            Add(Input.GetKeys());
-    }
-    public static void Add(int charId)
-    {
-        switch (charId)
-        {
-            case Key.CAPS_LOCK:
-            case Key.TAB:
-            case Key.LEFT_SHIFT:
-            case Key.RIGHT_SHIFT:
-            case Key.LEFT_CTRL:
-            case Key.RIGHT_CTRL:
-                return;
-        }
-        Text += char.ConvertFromUtf32(charId);
-    }
-    public static void Add(int[] chars)
-    {
-        foreach (int charId in chars)
-            Add(charId);
-    }
-    public static void Backspace()
-    {
-        Text = Text.Length > 0 ? Text.Substring(0, Text.Length - 1) : Text;
-    }
-    public static void Finish(bool result)
-    {
-        Settings.Setup.OnBeforeStep -= ListenInput;
-        if (result)
-            try
-            {
-                _property.SetValue
-                (
-                    _obj,
-                    !_isVector2 ?
-                    Convert.ChangeType(Text, _property.PropertyType) :
-                    (
-                        _isX ?
-                        new Vec2(float.Parse(Text), ((Vec2)_property.GetValue(_obj)).y) :
-                        new Vec2(((Vec2)_property.GetValue(_obj)).x, float.Parse(Text))
-                    )
-                );
-            }
-            catch
-            {
-                Debug.Log(">> Property wasn't changed due to the invalid given value");
-            }
-
-        _instanceCount--;
-        if (_instanceCount == 0 && !Setup.ComponentBox.visible)
-            GXPAssetEditor.SubscribeEditor();
-        _base.Destroy();
-        _back.Destroy();
-    }
-}
 public static class GXPAssetEditor
 {
     [NonSerialized] public static Font EditorFont;
     [NonSerialized] private static Sprite _darkening;
+
+    [NonSerialized] private static PolygonCollider _colliderBuffer;
+    [NonSerialized] private static Vec2[] _colliderPointsBuffer;
+    [NonSerialized] private static PropertyInfo _pointsInfo;
+    [NonSerialized] private static int _selectedPointId = -1;
+    [NonSerialized] private static Sprite _editColliderParent;
 
     public static void Start(string filename)
     {
@@ -354,27 +89,6 @@ public static class GXPAssetEditor
         }
 
         ResetCamera();
-    }
-    private static void ChangeTexture()
-    {
-        if(Selection.SelectedGameObject is null || Selection.SelectedGameObject.GetType() != typeof(Sprite))
-            return;
-
-        Debug.Log(">> Started GXP Asset texture change");
-
-        using (OpenFileDialog FileDialog = new OpenFileDialog())
-        {
-            FileDialog.InitialDirectory = Settings.AssetsPath;
-            FileDialog.Filter = "Images (*.png)|*.png";
-            FileDialog.RestoreDirectory = true;
-
-            if (FileDialog.ShowDialog() == DialogResult.OK)
-            {
-                (Selection.SelectedGameObject as Sprite).ResetParameters(true, FileDialog.FileName);
-
-                Debug.Log(">> Changed texture of GXP Asset : " + FileDialog.FileName);
-            }
-        }
     }
     private static void Save()
     {
@@ -479,6 +193,27 @@ public static class GXPAssetEditor
         Camera.AddFocus(Setup.DocumentPointer);
         Camera.SetLevel(Setup.MainLayer);
     }
+    public static void ChangeTexture()
+    {
+        if (Selection.SelectedGameObject is null || Selection.SelectedGameObject.GetType() != typeof(Sprite))
+            return;
+
+        Debug.Log(">> Started GXP Asset texture change");
+
+        using (OpenFileDialog FileDialog = new OpenFileDialog())
+        {
+            FileDialog.InitialDirectory = Settings.AssetsPath;
+            FileDialog.Filter = "Images (*.png)|*.png";
+            FileDialog.RestoreDirectory = true;
+
+            if (FileDialog.ShowDialog() == DialogResult.OK)
+            {
+                (Selection.SelectedGameObject as Sprite).ResetParameters(true, FileDialog.FileName);
+
+                Debug.Log(">> Changed texture of GXP Asset : " + FileDialog.FileName);
+            }
+        }
+    }
     public static void OpenComponentBox(Component component)
     {
         if (component is null)
@@ -551,6 +286,22 @@ public static class GXPAssetEditor
             x = 310,
             y = 100,
         });
+        if (typeof(PolygonCollider).IsAssignableFrom(component.GetType()))
+        {
+            fieldNameList.Add(new ConstValueDisplayer<string>("Collider points:", 320, 50)
+            {
+                color = 0xff0000,
+                font = EditorFont,
+            });
+            fieldChangeList.Add(new GUIButton("element_base", () => OpenEditCollider(component as PolygonCollider), layerMask: "GUI"));
+            fieldChangeList2.Add(new Sprite("Empty"));
+            fieldValueList.Add(new ConstValueDisplayer<string>("Edit", 320, 50)
+            {
+                color = 0xffbb00,
+                font = EditorFont,
+            });
+            fieldValueList2.Add(new Sprite("Empty"));
+        }
         PropertyInfo[] properties = component.GetType().GetProperties();
         foreach (PropertyInfo property in properties)
         {
@@ -572,7 +323,7 @@ public static class GXPAssetEditor
 
             if (oneColumn)
             {
-                fieldChangeList.Add(new GUIButton("element_base", () => WaitForPropertyInput.Try(property, component), layerMask: "GUI"));
+                fieldChangeList.Add(new GUIButton("element_base", () => new WaitForPropertyInput(property, component), layerMask: "GUI"));
                 fieldChangeList2.Add(new Sprite("Empty"));
                 fieldValueList.Add(new ValueDisplayer<string>(() => property.GetValue(component).ToString(), 320, 50)
                 {
@@ -584,8 +335,8 @@ public static class GXPAssetEditor
             else
             {
                 Sprite column1, column2;
-                fieldChangeList.Add(column1 = new GUIButton("element_base0,5", () => WaitForPropertyInput.Try(property, component, true, true), layerMask: "GUI"));
-                fieldChangeList2.Add(column2 = new GUIButton("element_base0,5", () => WaitForPropertyInput.Try(property, component, true, false),layerMask: "GUI"));
+                fieldChangeList.Add(column1 = new GUIButton("element_base0,5", () => new WaitForPropertyInput(property, component, true, true), layerMask: "GUI"));
+                fieldChangeList2.Add(column2 = new GUIButton("element_base0,5", () => new WaitForPropertyInput(property, component, true, false),layerMask: "GUI"));
                 fieldValueList.Add(new ValueDisplayer<string>(() => "x:" + ((Vec2)property.GetValue(component)).x.ToString(), 320, 50)
                 {
                     color = 0xffbb00,
@@ -680,6 +431,109 @@ public static class GXPAssetEditor
             _darkening.Destroy();
             Setup.ComponentList.visible = false;
             Setup.ComponentList.DestroyChildren();
+        }
+    }
+    public static void OpenEditCollider(PolygonCollider polygonCollider)
+    {
+        CloseComponentBox();
+        UnsubscribeEditor();
+
+        _colliderBuffer = polygonCollider;
+        _colliderPointsBuffer = new Vec2[_colliderBuffer.Points.Length];
+        polygonCollider.Points.CopyTo(_colliderPointsBuffer, 0);
+        _pointsInfo = typeof(PolygonCollider).GetProperty("Points", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        Setup.GUI.AddChild(_editColliderParent = new Sprite("Empty"));
+
+        _editColliderParent.AddChild(new ConstValueDisplayer<string>(
+            "[EDIT MODE] \n" +
+            " To move points drag&drop them with LMB\n" +
+            " To add point press 'RMB'\n" +
+            " To remove point press 'Ctrl+RMB'\n" +
+            " To apply changes press 'Enter'\n" +
+            " To discard changes press 'Backspace'", 400, 400)
+        {
+            x = 200,
+            y = 290,
+            color = 0xff0000,
+            font = EditorFont,
+        });
+        Settings.Setup.OnBeforeStep += UpdateEditMode;
+    }
+    private static void CloseEditCollider(bool result)
+    {
+        _editColliderParent.Destroy();
+        if (!result)
+        {
+            try {_pointsInfo.SetValue(_colliderBuffer, _colliderPointsBuffer);}
+            catch {}
+        }
+        SubscribeEditor();
+        Settings.Setup.OnBeforeStep -= UpdateEditMode;
+    }
+    private static void UpdateEditMode()
+    {
+        if (Input.GetKeyDown(Key.BACKSPACE))
+            CloseEditCollider(false);
+        else if (Input.GetKeyDown(Key.ENTER))
+            CloseEditCollider(true);
+        else if (Input.GetMouseButtonDown(1))
+        {
+            if(Input.GetKey(Key.LEFT_CTRL)) 
+            try
+            {
+                if (_colliderBuffer.Points.Length <= 2)
+                    return;
+                Vec2[] enlargedPointBuffer = new Vec2[_colliderBuffer.Points.Length - 1];
+                    for (int i = 0; i < enlargedPointBuffer.Length; i++)
+                        enlargedPointBuffer[i] = _colliderBuffer.Points[i];
+                _pointsInfo.SetValue(_colliderBuffer, enlargedPointBuffer);
+            }
+            catch { }
+            else try
+            {
+                Vec2[] enlargedPointBuffer = new Vec2[_colliderBuffer.Points.Length + 1];
+                _colliderBuffer.Points.CopyTo(enlargedPointBuffer, 0);
+                Vec2 relativeMouse = Input.mouseWorldPosition - _colliderBuffer.Owner.position;
+                relativeMouse.RotateDegrees(-_colliderBuffer.Owner.rotation);
+                relativeMouse *= new Vec2(_colliderBuffer.Owner.scaleX, _colliderBuffer.Owner.scaleY) ^ -1;
+                enlargedPointBuffer[enlargedPointBuffer.Length - 1] = relativeMouse;
+                _pointsInfo.SetValue(_colliderBuffer, enlargedPointBuffer);
+            }
+            catch { }
+        }
+        else if (Input.GetMouseButtonDown(0))
+        {
+            if (_selectedPointId != -1)
+            {
+                _selectedPointId = -1;
+                return;
+            }
+            float minDistance = float.MaxValue;
+            int pointId = 0;
+            for (int i = 0; i < _colliderBuffer.Points.Length; i++)
+            {
+                float distance = Vec2.Distance(_colliderBuffer.TransformedPoints[i], Input.mouseWorldPosition);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    pointId = i;
+                }
+            }
+            if (minDistance > 20)
+                return;
+            else
+                _selectedPointId = pointId;
+        }
+        else 
+        {
+            if (_selectedPointId == -1)
+                return;
+
+            Vec2 relativeDelta = InputManager.MouseDelta;
+            relativeDelta.RotateDegrees(_colliderBuffer.Owner.rotation);
+            relativeDelta *= new Vec2(_colliderBuffer.Owner.scaleX, _colliderBuffer.Owner.scaleY) ^ -1;
+            _colliderBuffer.Points[_selectedPointId] += relativeDelta.inverted * 0.5f;
         }
     }
 }

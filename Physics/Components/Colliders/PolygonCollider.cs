@@ -58,8 +58,10 @@ public class PolygonCollider : Collider
             for (int i = 1; i < args.Length - 1; i += 2)
                 pointsBuffer.Add(new Vec2(float.Parse(args[i]), float.Parse(args[i + 1])));
         else
+        {
             pointsBuffer.Add(Vec2.Zero);
-
+            pointsBuffer.Add(Vec2.Zero);
+        }
         Points = pointsBuffer.ToArray();
     }
     public override float CalculateActiveRadius()
@@ -77,6 +79,26 @@ public class PolygonCollider : Collider
                 maxDistance = currentDistance;
         }
         return maxDistance;
+    }
+
+    public Vec2 WorldToLocal(Vec2 point)
+    {
+        Vec2 origin = new Vec2(Owner.x, Owner.y);
+        Vec2 inverseScale = Owner.scale ^ -1f;
+        float inverseRotation = -Owner.rotation;
+
+        point.RotateAroundDegrees(inverseRotation, origin);
+        point -= origin;
+        point *= inverseScale;
+
+        return point;
+    }
+    public Vec2 WorldToRelative(Vec2 point)
+    {
+        Vec2 origin = new Vec2(Owner.x, Owner.y);
+        float inverseRotation = -Owner.rotation;
+        point.RotateAroundDegrees(inverseRotation, origin);
+        return point;
     }
 
     public Vec2[] GetAxes()

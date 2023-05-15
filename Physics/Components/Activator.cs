@@ -2,10 +2,10 @@
 using System;
 
 [Serializable]
-public class Activate: Component
+public class Activator: Component
 {
     public string Key { get; protected set; }
-    public Activate(GameObject owner): base(owner)
+    public Activator(GameObject owner): base(owner)
     {
 
     }

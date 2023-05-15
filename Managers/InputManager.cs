@@ -8,6 +8,10 @@ public static class InputManager
     public static event OnInput OnDownButtonPressed;
     public static event OnInput OnRightButtonPressed;
     public static event OnInput OnLeftButtonPressed;
+    public static event OnInput OnWButtonPressed;
+    public static event OnInput OnSButtonPressed;
+    public static event OnInput OnDButtonPressed;
+    public static event OnInput OnAButtonPressed;
     public static event OnInput OnSpaceButtonPressed;
     public static event OnInput OnDeleteButtonPressed;
 
@@ -29,12 +33,17 @@ public static class InputManager
 
         if (Input.GetKey(Key.S) && Input.GetKeyDown(Key.LEFT_CTRL)) OnSaveCombination?.Invoke();
         if (Input.GetKey(Key.D) && Input.GetKeyDown(Key.LEFT_CTRL)) Debug.Log(Settings.Setup.GetDiagnostics());
+        if (Input.GetKey(Key.P) && Input.GetKeyDown(Key.LEFT_CTRL)) Setup.PostProcessing.visible = !Setup.PostProcessing.visible;
         if (Input.GetKey(Key.A) && Input.GetKeyDown(Key.LEFT_CTRL)) OnAddCombination?.Invoke();
 
         if (Input.GetKey(Key.DOWN)) OnUpButtonPressed?.Invoke();
         if (Input.GetKey(Key.UP)) OnDownButtonPressed?.Invoke();
         if (Input.GetKey(Key.LEFT)) OnLeftButtonPressed?.Invoke();
         if (Input.GetKey(Key.RIGHT)) OnRightButtonPressed?.Invoke();
+        if (Input.GetKey(Key.W)) OnWButtonPressed?.Invoke();
+        if (Input.GetKey(Key.S)) OnSButtonPressed?.Invoke();
+        if (Input.GetKey(Key.A)) OnAButtonPressed?.Invoke();
+        if (Input.GetKey(Key.D)) OnDButtonPressed?.Invoke();
         if (Input.GetKeyDown(Key.SPACE)) OnSpaceButtonPressed?.Invoke();
         if (Input.GetKeyDown(Key.DELETE) || Input.GetKeyDown(Key.DELETE2)) OnDeleteButtonPressed?.Invoke();
 

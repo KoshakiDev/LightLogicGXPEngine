@@ -60,6 +60,11 @@
   <ItemGroup>
     <Compile Include="GXPExtended\GUI\VerticalList.cs" />
     <Compile Include="GXPExtended\GXPAEditor\GXPAssetEditor.cs" />
+    <Compile Include="GXPExtended\GXPAEditor\InputParser.cs" />
+    <Compile Include="GXPExtended\GXPAEditor\Selection.cs" />
+    <Compile Include="GXPExtended\GXPAEditor\WaitForFieldInput.cs" />
+    <Compile Include="GXPExtended\GXPAEditor\WaitForInput.cs" />
+    <Compile Include="GXPExtended\GXPAEditor\WaitForPropertyInput.cs" />
     <Compile Include="Managers\AssetManager.cs" />
     <Compile Include="GXPExtended\Debug.cs" />
     <Compile Include="GXPExtended\Core\IRefreshable.cs" />
