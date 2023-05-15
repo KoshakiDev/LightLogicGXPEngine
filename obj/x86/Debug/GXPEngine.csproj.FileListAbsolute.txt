@@ -98,13 +98,6 @@ C:\Users\Gebruiker\Desktop\New folder\GXPEngine\GXPEngine\obj\x86\Debug\GXPEngin
 C:\Users\Gebruiker\Desktop\New folder\GXPEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
 C:\Users\Gebruiker\Desktop\New folder\GXPEngine\GXPEngine\obj\x86\Debug\GXPEngine.exe
 C:\Users\Gebruiker\Desktop\New folder\GXPEngine\GXPEngine\obj\x86\Debug\GXPEngine.pdb
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\bin\Debug\GXPEngine.exe
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\bin\Debug\GXPEngine.pdb
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.AssemblyReference.cache
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.SuggestedBindingRedirects.cache
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.exe
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.pdb
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\bin\Debug\GXPEngine.exe
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\bin\Debug\GXPEngine.pdb
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\obj\x86\Debug\GXPEngine.csproj.AssemblyReference.cache
@@ -112,3 +105,10 @@ Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProje
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\obj\x86\Debug\GXPEngine.exe
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\obj\x86\Debug\GXPEngine.pdb
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\bin\Debug\GXPEngine.exe
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\bin\Debug\GXPEngine.pdb
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.AssemblyReference.cache
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.SuggestedBindingRedirects.cache
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.exe
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.pdb
