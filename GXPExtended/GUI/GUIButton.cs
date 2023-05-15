@@ -57,24 +57,47 @@ public enum ButtonState
         if (_state != ButtonState.Clicked)
         {
             if (HitTest(new Vec2(Input.mouseX, Input.mouseY)))
-            {    
+            {
                 if (_state == ButtonState.Normal)
+                {
                     _state = ButtonState.Hovering;
+                    scaleX += 0.01f;
+                    scaleY += 0.01f;
+                    parent?.SetChildIndex(this, Index + 3);
+                }
             }
             else if (_state == ButtonState.Hovering)
+            {
                 _state = ButtonState.Normal;
+                scaleX -= 0.01f;
+                scaleY -= 0.01f;
+                parent?.SetChildIndex(this, Index - 3);
+            }
         }
         else
         {
             _clickFadeCounter -= Time.deltaTime / 1000f;
             if (_clickFadeCounter <= 0)
+            {
                 _state = ButtonState.Hovering;
+                scaleX += 0.01f;
+                scaleY += 0.01f;
+                parent?.SetChildIndex(this, Index + 3);
+            }
         }
     }
-    public void SetNormal() => _state = ButtonState.Normal;
-    public void SetHovering() => _state = ButtonState.Hovering;
-    public void SetClicked() => _state = ButtonState.Clicked;
-
+    public void SetNormal()
+    {
+        _state = ButtonState.Normal;
+    }
+    public void SetHovering()
+    {
+        _state = ButtonState.Hovering;
+    }
+    public void SetClicked() 
+    {
+        _state = ButtonState.Clicked;
+    }
     public void Invoke() 
     {
         if (_action != null)

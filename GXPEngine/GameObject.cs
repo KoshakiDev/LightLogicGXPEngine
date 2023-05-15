@@ -178,6 +178,30 @@ namespace GXPEngine
             }
         }
 
+        public Vec2 TransformedPosition()
+        {
+            Vec2 transformedPosition = position;
+            GameObject gameObject = this;
+            while(gameObject.parent != null)
+            {
+                transformedPosition += gameObject.parent.position;
+                gameObject = gameObject.parent;
+            }
+            return transformedPosition;
+        }
+
+        public float TransformedRotation()
+        {
+            float transformedRotation = rotation;
+            GameObject gameObject = this;
+            while (gameObject.parent != null)
+            {
+                transformedRotation += gameObject.parent.rotation;
+                gameObject = gameObject.parent;
+            }
+            return transformedRotation;
+        }
+
         //------------------------------------------------------------------------------------------------------------------------
         //														OnDestroy()
         //------------------------------------------------------------------------------------------------------------------------
@@ -199,6 +223,7 @@ namespace GXPEngine
         /// </summary>
         public virtual void Destroy()
         {
+            if (this is GUIButton guibtn) guibtn.SetAction(null);
             if (BeforeDestroy != null)
                 BeforeDestroy.Invoke();
 

@@ -1,7 +1,9 @@
 using GXPEngine;
 using System;
+using System.Windows.Forms;
 
-[Serializable] public class Setup : Game
+[Serializable]
+public class Setup : Game
 {
     //-------------------------------- GRAPHICAL - LAYERS ----------------------------------//
     public static Sprite MainLayer, CollisionDebug, PostProcessing, EditorCollisionDebug, GUI;
@@ -10,7 +12,7 @@ using System;
     public static GameObject DocumentPointer, SelectionBox, ComponentBox, ComponentList;
 
     [STAThread] private static void Main() => new Setup();
-    
+
     public Setup() : base(1280, 720, false, pPixelArt: false)
     {
         void settings()
@@ -35,7 +37,7 @@ using System;
         void layers()
         {
             Physics.AddLayers(new string[]
-            { 
+            {
                 "Default",
                 "Bullets",
                 "Creatures",
@@ -150,13 +152,103 @@ using System;
             //AssetManager.LoadAsset("screenEffect_MULT"),
             //AssetManager.LoadAsset("screenEffect_Add")
         });
-        
+
         #endregion
-        
+
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
         if (args.Length > 1)
         {
+            OpenEditor(args[1]);
+            return;
+        }
+        #endregion
+
+
+
+
+        /*
+
+        Sprite empty = new Sprite("Empty");
+
+        Sprite gun_top = new Sprite("gun_1");
+
+        Sprite gun_bottom = new Sprite("gun_2");
+
+
+
+
+
+        gun_top.AddChild(gun_bottom);
+        gun_top.AddChild(empty);
+
+
+        gun_top.SetOrigin(320 - 172, 282 - 150);
+        gun_bottom.SetOrigin(320 - 267, 282 - 132);
+        gun_bottom.SetXY(0, 0);
+        gun_bottom.SetXY((320 - 267) - (320 - 172), (282 - 132) - (282 - 150));
+
+        //- 122 - 279
+        empty.SetXY(122 - (320 - 172), 279 - (282 - 150));
+
+        //gun_bottom.SetXY(320 - (150 - 132), 282 - (172 - 267));
+
+
+        empty.AddComponent(typeof(LightCaster), args: new string[]
+            {
+            }
+        );
+
+        gun_top.AddComponent(typeof(Movable), args: new string[]
+            {
+            }
+        );
+
+        gun_top.TryGetComponent(typeof(Movable), out Component c2);
+
+        Movable movableComponentTop = (Movable)c2;
+
+        // movableComponentTop.MovementLock.Equals(true);
+
+
+
+
+
+
+
+        AssetManager.UpdateAsset("laserGun", gun_top);
+
+        MainLayer.AddChild(gun_top);
+
+        */
+        Settings.CollisionDebug.Equals(true);
+
+
+        OpenMenu();
+        Camera.AddFocus(DocumentPointer);
+        Camera.SetLevel(MainLayer);
+        Debug.Log("\n-----Start-----\n");
+
+        void OpenMenu()
+        {
+            GUI.AddChildren(new GameObject[]
+            {
+                new GUIButton("Endurance") { x = 206, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+                new GUIButton("Sandbox", ChooseAsset ) { x = width - 216, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+                new GUIButton("Story", () => OpenLevel("Level 1")) { x = 635, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+            });
+        }
+        void OpenLevel(string name)
+        {
+            MainLayer.DestroyChildren();
+            GUI.DestroyChildren();
+
+            MainLayer.AddChild(AssetManager.LoadAsset(name));
+        }
+        void OpenEditor(string document)
+        {
+            GUI.DestroyChildren();
+
             EditorCollisionDebug.AddChild(AssetManager.LoadAsset("editor"));
             GUI.AddChild(SelectionBox = new Sprite("selection_box", layerMask: "GUI")
             {
@@ -182,19 +274,26 @@ using System;
             Camera.SetFactor(0.1f);
             Settings.ComponentRegistrationBlock = false;
 
-            GXPAssetEditor.Start(args[1]);
+            GXPAssetEditor.Start(document);
             GXPAssetEditor.SubscribeEditor();
             Debug.Log("\n-----Start-----\n");
-            return;
         }
-        #endregion
+        void ChooseAsset()
+        {
+            Debug.Log(">> Started GXP Asset load");
 
-        #region Setup level
-        MainLayer.AddChild(AssetManager.LoadAsset("mechanicTestLevel"));
-        #endregion
+            using (OpenFileDialog FileDialog = new OpenFileDialog())
+            {
+                FileDialog.InitialDirectory = Settings.AssetsPath;
+                FileDialog.Filter = "GXP Assets (*.gxpa)|*.gxpa";
+                FileDialog.RestoreDirectory = true;
 
-        Camera.SetLevel(MainLayer);
-        Camera.AddFocus(DocumentPointer);
-        Debug.Log("\n-----Start-----\n");
+                if (FileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    OpenEditor(FileDialog.FileName);
+                    Debug.Log(">> Opened GXP Asset import : " + FileDialog.FileName);
+                }
+            }
+        }
     }
 }

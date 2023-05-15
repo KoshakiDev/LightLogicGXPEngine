@@ -11,7 +11,7 @@ public class PolygonCollider : Collider
         get
         {
             Vec2[] transformedPoints = new Vec2[Points.Length];
-            Vec2 origin = new Vec2(Owner.x, Owner.y);
+            Vec2 origin = Owner.position;
             for (int i = 0; i < transformedPoints.Length; i++)
             {
                 transformedPoints[i] = Points[i] * Owner.scale + origin;
