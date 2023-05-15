@@ -30,7 +30,7 @@ public static class GXPAssetEditor
     }
     public static void SubscribeEditor()
     {
-        InputManager.OnRightMousePressed += ChangeSelection;
+        InputManager.OnRightMousePressedDown += ChangeSelection;
         InputManager.OnSaveCombination += Save;
         InputManager.OnAddCombination += Add;
         InputManager.OnMouseMoved += Transform;
@@ -38,7 +38,7 @@ public static class GXPAssetEditor
     }
     public static void UnsubscribeEditor()
     {
-        InputManager.OnRightMousePressed -= ChangeSelection;
+        InputManager.OnRightMousePressedDown -= ChangeSelection;
         InputManager.OnSaveCombination -= Save;
         InputManager.OnAddCombination -= Add;
         InputManager.OnMouseMoved -= Transform;
