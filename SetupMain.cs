@@ -156,6 +156,20 @@ using System;
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
         if (args.Length > 1)
+            OpenEditor(args[1]);
+        #endregion
+
+        #region Setup level
+        MainLayer.AddChild(AssetManager.LoadAsset("MechanicTestLevel"));
+        DocumentPointer.TryGetComponent(typeof(PlayerController), out Component component);
+        typeof(PlayerController).GetProperty("MaxSpeed").SetValue(component, 0);
+        #endregion
+
+        Camera.SetLevel(MainLayer);
+        Camera.AddFocus(DocumentPointer);
+        Debug.Log("\n-----Start-----\n");
+
+        void OpenEditor(string document)
         {
             EditorCollisionDebug.AddChild(AssetManager.LoadAsset("editor"));
             GUI.AddChild(SelectionBox = new Sprite("selection_box", layerMask: "GUI")
@@ -182,21 +196,10 @@ using System;
             Camera.SetFactor(0.1f);
             Settings.ComponentRegistrationBlock = false;
 
-            GXPAssetEditor.Start(args[1]);
+            GXPAssetEditor.Start(document);
             GXPAssetEditor.SubscribeEditor();
             Debug.Log("\n-----Start-----\n");
             return;
         }
-        #endregion
-
-        #region Setup level
-        MainLayer.AddChild(AssetManager.LoadAsset("MechanicTestLevel"));
-        DocumentPointer.TryGetComponent(typeof(PlayerController), out Component component);
-        typeof(PlayerController).GetProperty("MaxSpeed").SetValue(component, 0);
-        #endregion
-
-        Camera.SetLevel(MainLayer);
-        Camera.AddFocus(DocumentPointer);
-        Debug.Log("\n-----Start-----\n");
     }
 }
