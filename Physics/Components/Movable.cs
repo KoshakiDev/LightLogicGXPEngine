@@ -52,6 +52,9 @@ public class Movable : Component, IRefreshable
         if (MovementLock)
             return;
 
+        if (relativePoint1.x > relativePoint2.x || relativePoint1.y > relativePoint2.y)
+            direction *= -1;
+
         Vec2 step = direction * (relativePoint2 - relativePoint1) * Time.deltaTime / 1000f * 0.5f;
         Owner.SetXY(Owner.position + step);
 
