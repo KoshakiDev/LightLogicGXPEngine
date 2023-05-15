@@ -1,6 +1,7 @@
 ﻿using GXPEngine;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 [Serializable]
 public class LightCaster: Component
@@ -35,8 +36,25 @@ public class LightCaster: Component
         base.Update();
         ClearRays();
 
-        Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.rotation);
-        Vec2 startPosition = Owner.position;
+        Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.TransformedRotation());
+
+
+        //Vec2 v = Owner.position;
+
+        float radius = Vec2.Distance(Owner.parent.position, Owner.position);
+
+        Vec2 unit = Vec2.GetUnitVectorDegrees(Owner.TransformedRotation());
+
+        //Debug.Log(" pos: " + Owner.position + " v:" + v);
+
+
+
+        //v.RotateAroundDegrees(Owner.TransformedRotation(), (Owner as Sprite).GetOrigin());
+
+        Vec2 startPosition = Owner.parent.position + unit * radius;
+
+
+
 
         Sprite collisionPoint = new Sprite("laser_collision");
         Setup.MainLayer.AddChild(collisionPoint);
@@ -53,7 +71,6 @@ public class LightCaster: Component
                 OnFuelEmpty();
             Fuel -= Time.deltaTime / 1000f;
 
-            Debug.Log("fuel: " + Fuel);
 
             Raycast(startPosition, direction, LightColor.WHITE, collisionPoint.Index);
         }
