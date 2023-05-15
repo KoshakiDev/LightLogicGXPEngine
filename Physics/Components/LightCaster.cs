@@ -53,7 +53,7 @@ public class LightCaster: Component
 
         Vec2 startPosition = Owner.parent.position + unit * radius;
 
-
+        
 
 
         Sprite collisionPoint = new Sprite("laser_collision");

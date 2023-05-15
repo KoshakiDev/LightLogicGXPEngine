@@ -167,9 +167,9 @@ public class Setup : Game
 
 
 
-        /*
+        
 
-        Sprite empty = new Sprite("Empty");
+        Sprite lightCaster = new Sprite("Empty");
 
         Sprite gun_top = new Sprite("gun_1");
 
@@ -180,29 +180,34 @@ public class Setup : Game
 
 
         gun_top.AddChild(gun_bottom);
-        gun_top.AddChild(empty);
+        gun_top.AddChild(lightCaster);
 
 
-        gun_top.SetOrigin(320 - 172, 282 - 150);
-        gun_bottom.SetOrigin(320 - 267, 282 - 132);
+        gun_top.SetOrigin(120, 150);
+        
+        
+        gun_bottom.SetOrigin(120, 150);
+        
+        
         gun_bottom.SetXY(0, 0);
-        gun_bottom.SetXY((320 - 267) - (320 - 172), (282 - 132) - (282 - 150));
+        
+        lightCaster.SetXY(0, 130);
 
-        //- 122 - 279
-        empty.SetXY(122 - (320 - 172), 279 - (282 - 150));
+        
 
-        //gun_bottom.SetXY(320 - (150 - 132), 282 - (172 - 267));
-
-
-        empty.AddComponent(typeof(LightCaster), args: new string[]
+        
+        lightCaster.AddComponent(typeof(LightCaster), args: new string[]
             {
             }
         );
+        
 
         gun_top.AddComponent(typeof(Movable), args: new string[]
             {
             }
         );
+
+
 
         gun_top.TryGetComponent(typeof(Movable), out Component c2);
 
@@ -210,18 +215,29 @@ public class Setup : Game
 
         // movableComponentTop.MovementLock.Equals(true);
 
+        
+        gun_bottom.AddComponent(typeof(GunBottomThing), args: new string[]
+            {
+            }
+        );
 
 
 
+        gun_bottom.TryGetComponent(typeof(GunBottomThing), out Component c1);
+
+        GunBottomThing gunBottom = (GunBottomThing)c1;
 
 
+        
 
+
+        //Sprite empty1 = new Sprite("Empty");
         AssetManager.UpdateAsset("laserGun", gun_top);
 
-        MainLayer.AddChild(gun_top);
+        //MainLayer.AddChild(gun_top);
 
-        */
-        Settings.CollisionDebug.Equals(true);
+        
+        //Settings.CollisionDebug.Equals(true);
 
 
         OpenMenu();
