@@ -160,6 +160,7 @@ public class Setup : Game
         if (args.Length > 1)
         {
             OpenEditor(args[1]);
+            LightLogicGame.InEditor = true;
             return;
         }
         #endregion
