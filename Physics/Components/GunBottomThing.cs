@@ -13,13 +13,16 @@ public class GunBottomThing : Component
     }
     public void InverseRotate()
     {
+        if (Owner.parent is null)
+            return;
+
         float staticAngle = 90;
         Owner.parent.TryGetComponent(typeof(Movable), out Component component);
-        if(component != null)
+        if (component != null)
         {
             Movable movable = component as Movable;
             staticAngle = (movable.Point2 - movable.Point1).angleInDeg;
-        }
+        } 
         Owner.rotation = -Owner.parent.rotation - staticAngle;
     }
 

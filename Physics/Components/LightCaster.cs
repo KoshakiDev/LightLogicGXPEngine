@@ -27,18 +27,27 @@ public class LightCaster: Component
     public float Fuel { get; protected set; }
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
+        InputManager.OnLeftMousePressed += TryToShoot;
         ActiveLayerMasks = args;
         Fuel = 100;
+    }
+    public override void Refresh()
+    {
+        base.Refresh();
+        InputManager.OnLeftMousePressed += TryToShoot;
     }
     protected override void Update()
     {
         base.Update();
         ClearRays();
-
-        TryToShoot();
     }
     private void TryToShoot()
     {
+
+        if (Fuel <= 0)
+            OnFuelEmpty();
+        Fuel -= Time.deltaTime / 1000f * 30;
+
         Vec2 startPosition = CalculateStartPosition(out Vec2 direction);
 
         Sprite collisionPoint = new Sprite("laser_collision");
@@ -50,14 +59,7 @@ public class LightCaster: Component
         _rays.Add(collisionPoint);
         _reflectCount = 0;
 
-        if (Input.GetMouseButton(1))
-        {
-            if (Fuel <= 0)
-                OnFuelEmpty();
-            Fuel -= Time.deltaTime / 1000f;
-
-            Raycast(startPosition, direction, LightColor.WHITE, collisionPoint.Index);
-        }
+        Raycast(startPosition, direction, LightColor.WHITE, collisionPoint.Index);
     }
     private Vec2 CalculateStartPosition(out Vec2 direction)
     {
@@ -200,7 +202,11 @@ public class LightCaster: Component
     }
     private void OnFuelEmpty()
     {
-        Debug.Log("Fuel is empty, Game Over");
+        if (!LightLogicGame.InEditor)
+        {
+            InputManager.OnLeftMousePressed -= TryToShoot;
+            LightLogicGame.GameOver();
+        }
     }
     private void ClearRays()
     {

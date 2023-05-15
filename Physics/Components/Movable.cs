@@ -1,5 +1,6 @@
 ﻿using GXPEngine;
 using System;
+using System.Windows.Forms;
 
 [Serializable]
 public class Movable : Component, IRefreshable
@@ -34,6 +35,9 @@ public class Movable : Component, IRefreshable
     {
         base.Update();
         ShowDebug();
+        ClearRails();
+        visualize();
+
         if (!isSelected)
             return;
     }
@@ -50,10 +54,14 @@ public class Movable : Component, IRefreshable
 
         Vec2 step = direction * (relativePoint2 - relativePoint1) * Time.deltaTime / 1000f * 0.5f;
         Owner.SetXY(Owner.position + step);
-        if (Owner.x < relativePoint1.x) Owner.x = relativePoint1.x;
-        if (Owner.y < relativePoint1.y) Owner.y = relativePoint1.y;
-        if (Owner.x > relativePoint2.x) Owner.x = relativePoint2.x;
-        if (Owner.y > relativePoint2.y) Owner.y = relativePoint2.y;
+
+        Vec2 min = new Vec2(Mathf.Min(relativePoint1.x, relativePoint2.x), Mathf.Min(relativePoint1.y, relativePoint2.y));
+        Vec2 max = new Vec2(Mathf.Max(relativePoint1.x, relativePoint2.x), Mathf.Max(relativePoint1.y, relativePoint2.y));
+
+        if (Owner.x < min.x) Owner.x = min.x;
+        if (Owner.y < min.y) Owner.y = min.y;
+        if (Owner.x > max.x) Owner.x = max.x;
+        if (Owner.y > max.y) Owner.y = max.y;
     }
     private void Right()
     {
@@ -96,11 +104,11 @@ public class Movable : Component, IRefreshable
 
     private void SubscribeToInput()
     {
-        InputManager.OnRightMousePressed += ChangeSelection;
+        InputManager.OnRightMousePressedDown += ChangeSelection;
     }
     private void UnsubscribeFromInput()
     {
-        InputManager.OnRightMousePressed -= ChangeSelection;
+        InputManager.OnRightMousePressedDown -= ChangeSelection;
     }
 
     private void SubscribeToInputWhenSelected()
@@ -118,11 +126,89 @@ public class Movable : Component, IRefreshable
         (Owner as Sprite).SetColor(0.8f, 0.8f, 0.8f);
     }
 
+    Sprite rail;
+    Sprite rail_point_1;
+    Sprite rail_point_2;
+
+    private void visualize()
+    {
+        Vec2 offsetY = new Vec2(0, -40);
+
+        Vec2 offsetX = new Vec2(65, 0);
+
+        float staticAngle = (Point2 - Point1).angleInDeg;
+
+        Vec2 offset_1 = (offsetY + offsetX);
+        Vec2 offset_2 = (offsetY - offsetX);
+
+
+        offset_1.RotateAroundDegrees(staticAngle, relativePoint1);
+
+        offset_2.RotateAroundDegrees(staticAngle, relativePoint2);
+
+
+        Vec2 start = relativePoint1 + offset_1;
+            
+        
+        Vec2 end = relativePoint2 + offset_2;
+        
+
+        rail = new Sprite("rail_segment");
+        rail_point_1 = new Sprite("rail_point");
+        rail_point_2 = new Sprite("rail_point");
+
+        int index = 50;
+
+        Setup.MainLayer.AddChildAt(rail, index);
+        Setup.MainLayer.AddChildAt(rail_point_1, index + 1);
+        Setup.MainLayer.AddChildAt(rail_point_2, index + 1);
+
+
+        rail_point_1.SetXY(start);
+
+        rail_point_2.SetXY(end);
+
+        rail_point_1.SetOrigin(rail_point_1.width / 2, rail_point_1.height / 2);
+        rail_point_2.SetOrigin(rail_point_2.width / 2, rail_point_2.height / 2);
+
+
+        rail.SetOrigin(rail.width / 2, rail.height / 2);
+
+        rail.SetXY(start);
+
+        rail.scaleX = Vec2.Distance(start, end);
+        rail.rotation = (end - start).angleInDeg + 90;
+
+
+        
+
+        rail.SetScaleXY(Owner.scaleY);
+        rail_point_1.SetScaleXY(Owner.scaleY);
+        rail_point_2.SetScaleXY(Owner.scaleY);
+
+
+
+
+        
+
+    }
+
+
+
+    private void ClearRails()
+    {
+        rail?.Destroy();
+        rail_point_1?.Destroy();
+        rail_point_2?.Destroy();
+    }
+
+
     private void ShowDebug()
     {
         if (Settings.CollisionDebug)
         {
             Settings.ColliderDebug.Stroke(0, 180, 0);
+            
             Settings.ColliderDebug.Line(relativePoint1.x + Camera.Position.x, relativePoint1.y + Camera.Position.y, relativePoint2.x + Camera.Position.x, relativePoint2.y + Camera.Position.y);
             Settings.ColliderDebug.Ellipse(relativePoint1.x + Camera.Position.x, relativePoint1.y + Camera.Position.y, 10, 10);
             Settings.ColliderDebug.Ellipse(relativePoint2.x + Camera.Position.x, relativePoint2.y + Camera.Position.y, 10, 10);
