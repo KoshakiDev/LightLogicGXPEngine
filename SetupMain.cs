@@ -1,5 +1,6 @@
 using GXPEngine;
 using System;
+using System.Windows.Forms;
 
 [Serializable] public class Setup : Game
 {
@@ -156,21 +157,37 @@ using System;
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
         if (args.Length > 1)
+        {
             OpenEditor(args[1]);
+            return;
+        }
         #endregion
 
-        #region Setup level
-        MainLayer.AddChild(AssetManager.LoadAsset("MechanicTestLevel"));
-        DocumentPointer.TryGetComponent(typeof(PlayerController), out Component component);
-        typeof(PlayerController).GetProperty("MaxSpeed").SetValue(component, 0);
-        #endregion
-
-        Camera.SetLevel(MainLayer);
+        OpenMenu();
         Camera.AddFocus(DocumentPointer);
+        Camera.SetLevel(MainLayer);
         Debug.Log("\n-----Start-----\n");
 
+        void OpenMenu()
+        {
+            GUI.AddChildren(new GameObject[]
+            {
+                new GUIButton("Endurance") { x = 200, y = 360, scaleX = 0.7f, scaleY = 0.7f },
+                new GUIButton("Sandbox", ChooseAsset ) { x = 1054, y = 360, scaleX = 0.7f, scaleY = 0.7f },
+                new GUIButton("Story", () => OpenLevel("Level 1")) { x = 627, y = 360, scaleX = 0.7f, scaleY = 0.7f },
+            });
+        }
+        void OpenLevel(string name)
+        {
+            MainLayer.DestroyChildren();
+            GUI.DestroyChildren();
+
+            MainLayer.AddChild(AssetManager.LoadAsset(name));
+        }
         void OpenEditor(string document)
         {
+            GUI.DestroyChildren();
+
             EditorCollisionDebug.AddChild(AssetManager.LoadAsset("editor"));
             GUI.AddChild(SelectionBox = new Sprite("selection_box", layerMask: "GUI")
             {
@@ -199,7 +216,23 @@ using System;
             GXPAssetEditor.Start(document);
             GXPAssetEditor.SubscribeEditor();
             Debug.Log("\n-----Start-----\n");
-            return;
+        }
+        void ChooseAsset()
+        {
+            Debug.Log(">> Started GXP Asset load");
+
+            using (OpenFileDialog FileDialog = new OpenFileDialog())
+            {
+                FileDialog.InitialDirectory = Settings.AssetsPath;
+                FileDialog.Filter = "GXP Assets (*.gxpa)|*.gxpa";
+                FileDialog.RestoreDirectory = true;
+
+                if (FileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    OpenEditor(FileDialog.FileName);
+                    Debug.Log(">> Opened GXP Asset import : " + FileDialog.FileName);
+                }
+            }
         }
     }
 }
