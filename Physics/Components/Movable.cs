@@ -54,10 +54,14 @@ public class Movable : Component, IRefreshable
 
         Vec2 step = direction * (relativePoint2 - relativePoint1) * Time.deltaTime / 1000f * 0.5f;
         Owner.SetXY(Owner.position + step);
-        if (Owner.x < relativePoint1.x) Owner.x = relativePoint1.x;
-        if (Owner.y < relativePoint1.y) Owner.y = relativePoint1.y;
-        if (Owner.x > relativePoint2.x) Owner.x = relativePoint2.x;
-        if (Owner.y > relativePoint2.y) Owner.y = relativePoint2.y;
+
+        Vec2 min = new Vec2(Mathf.Min(relativePoint1.x, relativePoint2.x), Mathf.Min(relativePoint1.y, relativePoint2.y));
+        Vec2 max = new Vec2(Mathf.Max(relativePoint1.x, relativePoint2.x), Mathf.Max(relativePoint1.y, relativePoint2.y));
+
+        if (Owner.x < min.x) Owner.x = min.x;
+        if (Owner.y < min.y) Owner.y = min.y;
+        if (Owner.x > max.x) Owner.x = max.x;
+        if (Owner.y > max.y) Owner.y = max.y;
     }
     private void Right()
     {
