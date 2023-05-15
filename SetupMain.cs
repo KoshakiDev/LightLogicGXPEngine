@@ -22,7 +22,7 @@ public class Setup : Game
             Settings.ReadParameters();
             Settings.Volume = 0.8f;
             Settings.Fullscreen = false;
-            Settings.CollisionDebug = true;
+            Settings.CollisionDebug = false;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
             Settings.RaycastStep = 100;
@@ -163,7 +163,6 @@ public class Setup : Game
             return;
         }
         #endregion
-
 
 
         OpenMenu();
