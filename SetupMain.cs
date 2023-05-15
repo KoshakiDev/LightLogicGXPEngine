@@ -2,7 +2,8 @@ using GXPEngine;
 using System;
 using System.Windows.Forms;
 
-[Serializable] public class Setup : Game
+[Serializable]
+public class Setup : Game
 {
     //-------------------------------- GRAPHICAL - LAYERS ----------------------------------//
     public static Sprite MainLayer, CollisionDebug, PostProcessing, EditorCollisionDebug, GUI;
@@ -11,7 +12,7 @@ using System.Windows.Forms;
     public static GameObject DocumentPointer, SelectionBox, ComponentBox, ComponentList;
 
     [STAThread] private static void Main() => new Setup();
-    
+
     public Setup() : base(1280, 720, false, pPixelArt: false)
     {
         void settings()
@@ -36,7 +37,7 @@ using System.Windows.Forms;
         void layers()
         {
             Physics.AddLayers(new string[]
-            { 
+            {
                 "Default",
                 "Bullets",
                 "Creatures",
@@ -151,9 +152,9 @@ using System.Windows.Forms;
             //AssetManager.LoadAsset("screenEffect_MULT"),
             //AssetManager.LoadAsset("screenEffect_Add")
         });
-        
+
         #endregion
-        
+
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
         if (args.Length > 1)

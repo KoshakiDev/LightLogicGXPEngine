@@ -69,7 +69,7 @@
     <Compile Include="GXPExtended\Debug.cs" />
     <Compile Include="GXPExtended\Core\IRefreshable.cs" />
     <Compile Include="Physics\Components\Activator.cs" />
-    <Compile Include="Physics\Components\Actuator.cs" />
+    <Compile Include="Physics\Components\FadingSprite.cs" />
     <Compile Include="Physics\Components\Colliders\CircleCollider.cs" />
     <Compile Include="Physics\Components\Colliders\Collider.cs" />
     <Compile Include="Physics\Components\Colliders\PolygonCollider.cs" />
