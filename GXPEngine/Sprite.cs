@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Forms;
 using GXPEngine.Core;
  
 
@@ -330,16 +331,39 @@ namespace GXPEngine
 			byte rb = (byte)Math.Floor((b * 255));
 			color = (uint)rb + (uint)(rg << 8) + (uint)(rr << 16);
 		}
-		
-		//------------------------------------------------------------------------------------------------------------------------
-		//														alpha
-		//------------------------------------------------------------------------------------------------------------------------
-		/// <summary>
-		/// Gets or sets the alpha value of the sprite. 
-		/// Setting this value allows you to make the sprite (semi-)transparent.
-		/// The alpha value should be in the range 0...1, where 0 is fully transparent and 1 is fully opaque.
-		/// </summary>
-		public float alpha {
+
+        //------------------------------------------------------------------------------------------------------------------------
+        //														InterpolateColor
+        //------------------------------------------------------------------------------------------------------------------------
+       
+
+        public int InterpolateColor(int pFrom, int pTo, float pRatio) 
+		{
+            int ar = (pFrom & 0xFF0000) >> 16;
+            int ag = (pFrom & 0x00FF00) >> 8;
+            int ab = (pFrom & 0x0000FF);
+
+            int br = (pTo & 0xFF0000) >> 16;
+            int bg = (pTo & 0x00FF00) >> 8;
+            int bb = (pTo & 0x0000FF);
+
+            int rr = ar + (int)(pRatio * (br - ar));
+            int rg = ag + (int)(pRatio * (bg - ag));
+            int rb = ab + (int)(pRatio * (bb - ab));
+
+            return (rr << 16) + (rg << 8) + (rb & 0xFF);
+        }
+
+
+    //------------------------------------------------------------------------------------------------------------------------
+    //														alpha
+    //------------------------------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Gets or sets the alpha value of the sprite. 
+    /// Setting this value allows you to make the sprite (semi-)transparent.
+    /// The alpha value should be in the range 0...1, where 0 is fully transparent and 1 is fully opaque.
+    /// </summary>
+    public float alpha {
 			get { return _alpha; }
 			set 
 			{
