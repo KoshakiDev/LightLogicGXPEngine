@@ -190,6 +190,18 @@ namespace GXPEngine
             return transformedPosition;
         }
 
+        public float TransformedRotation()
+        {
+            float transformedRotation = rotation;
+            GameObject gameObject = this;
+            while (gameObject.parent != null)
+            {
+                transformedRotation += gameObject.parent.rotation;
+                gameObject = gameObject.parent;
+            }
+            return transformedRotation;
+        }
+
         //------------------------------------------------------------------------------------------------------------------------
         //														OnDestroy()
         //------------------------------------------------------------------------------------------------------------------------
