@@ -5,8 +5,8 @@ using System.Security.Policy;
 [Serializable]
 public class Sensor : Component
 {
-    float percentage = 0.0f;
-    float speed = 1.0f; // per second
+    public float Percentage { get; protected set; } = 0.0f;
+    public float Speed { get; protected set; } = 4.0f; // per second
 
     public Sensor(GameObject owner, params string[] args) : base(owner){}
 
@@ -14,7 +14,7 @@ public class Sensor : Component
     {
         base.Refresh();
         Sprite sprite = (Sprite)Owner;
-        sprite.color = 0x000000;
+        sprite.color = 0x555555;
     }
     protected override void Update()
     { 
@@ -23,14 +23,14 @@ public class Sensor : Component
 
     public void OnHit()
     {
-        if (percentage == 100f)
+        if (Percentage == 100f)
         {
             TurnOn();
             return;
         }
-        percentage = Mathf.Clamp(percentage + (1.0f / (float) Time.deltaTime), 0f, 100f);
+        Percentage = Mathf.Clamp(Percentage + (1.0f / (float) Time.deltaTime), 50f, 100f);
         Sprite sprite = (Sprite)Owner;
-        sprite.color = (uint)sprite.InterpolateColor(0x000000, 0xFFFFFF, percentage / 100f);
+        sprite.color = (uint)sprite.InterpolateColor(0x000000, 0xFFFFFF, Percentage / 100f);
     }
 
     public void TurnOn()
