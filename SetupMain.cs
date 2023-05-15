@@ -221,6 +221,18 @@ using System.Windows.Forms;
         {
             Debug.Log(">> Started GXP Asset load");
 
+<<<<<<< HEAD
+        #region Setup level
+        MainLayer.AddChild(AssetManager.LoadAsset("SensorTest"));
+        //MainLayer.AddChild(AssetManager.LoadAsset("mechanicTestLevel"));
+        #endregion
+
+
+
+        Camera.SetLevel(MainLayer);
+        Camera.AddFocus(DocumentPointer);
+        Debug.Log("\n-----Start-----\n");
+=======
             using (OpenFileDialog FileDialog = new OpenFileDialog())
             {
                 FileDialog.InitialDirectory = Settings.AssetsPath;
@@ -234,5 +246,6 @@ using System.Windows.Forms;
                 }
             }
         }
+>>>>>>> c131e1cdb93eb7ee9b14eec5902e6026edbf9ad9
     }
 }
