@@ -71,11 +71,18 @@ public class LightCaster: Component
             visualize();
             if (!collision) break;
             collisionData.self.TryGetComponent(typeof(ColliderSurfaceAttributes), out Component attrComponent);
-            
-            if(collisionData.self.LayerMask == "Finish")
-            {
-                Debug.Log("Sensor've got hit!");
 
+            collisionData.self.TryGetComponent(typeof(Sensor), out Component sensorComponent);
+
+
+
+            //if (collisionData.self.LayerMask == "Finish")
+            if (sensorComponent != null)
+            {
+                Sensor sensor = (Sensor)sensorComponent;
+                sensor.OnHit();
+                //sensorComponent.
+                //collisionData.self.
                 //Settings.Setup.Exit();
                 return;
             }

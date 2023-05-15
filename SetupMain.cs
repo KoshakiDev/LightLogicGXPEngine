@@ -20,7 +20,7 @@ using System;
             Settings.ReadParameters();
             Settings.Volume = 0.8f;
             Settings.Fullscreen = false;
-            Settings.CollisionDebug = false;
+            Settings.CollisionDebug = true;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
             Settings.RaycastStep = 100;

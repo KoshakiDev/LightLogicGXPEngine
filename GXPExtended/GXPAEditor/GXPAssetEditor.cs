@@ -81,8 +81,6 @@ public static class GXPAssetEditor
                 Selection.DocumentObject.AddChild(loadedAsset);
                 TryOutliningGameObject(loadedAsset, false);
                 loadedAsset.SetXY(Input.mouseWorldPosition.x, Input.mouseWorldPosition.y);
-                loadedAsset.SetScaleXY(1, 1);
-                loadedAsset.rotation = 0;
 
                 Debug.Log(">> Imported GXP Asset import : " + FileDialog.FileName);
             }
