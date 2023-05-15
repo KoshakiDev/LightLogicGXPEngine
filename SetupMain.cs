@@ -190,7 +190,7 @@ using System;
         #endregion
 
         #region Setup level
-        MainLayer.AddChild(AssetManager.LoadAsset("SensorTest"));
+        MainLayer.AddChild(AssetManager.LoadAsset("mechanicTestLevel"));
         #endregion
 
         Camera.SetLevel(MainLayer);
