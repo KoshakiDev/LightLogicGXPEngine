@@ -1,7 +1,6 @@
 ﻿using GXPEngine;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 
 [Serializable]
 public class LightCaster: Component
@@ -36,25 +35,11 @@ public class LightCaster: Component
         base.Update();
         ClearRays();
 
-        Vec2 direction = Vec2.GetUnitVectorDegrees(Owner.TransformedRotation());
-
-
-        //Vec2 v = Owner.position;
-
-        float radius = Vec2.Distance(Owner.parent.position, Owner.position);
-
-        Vec2 unit = Vec2.GetUnitVectorDegrees(Owner.TransformedRotation());
-
-        //Debug.Log(" pos: " + Owner.position + " v:" + v);
-
-
-
-        //v.RotateAroundDegrees(Owner.TransformedRotation(), (Owner as Sprite).GetOrigin());
-
-        Vec2 startPosition = Owner.parent.position + unit * radius;
-
-        
-
+        TryToShoot();
+    }
+    private void TryToShoot()
+    {
+        Vec2 startPosition = CalculateStartPosition(out Vec2 direction);
 
         Sprite collisionPoint = new Sprite("laser_collision");
         Setup.MainLayer.AddChild(collisionPoint);
@@ -71,11 +56,19 @@ public class LightCaster: Component
                 OnFuelEmpty();
             Fuel -= Time.deltaTime / 1000f;
 
-
             Raycast(startPosition, direction, LightColor.WHITE, collisionPoint.Index);
         }
     }
+    private Vec2 CalculateStartPosition(out Vec2 direction)
+    {
+        direction = Vec2.GetUnitVectorDegrees(Owner.TransformedRotation());
 
+        if (Owner.parent is null)
+            return Vec2.Zero;
+
+        float radius = Vec2.Distance(Owner.parent.position, Owner.parent.position + Owner.position);
+        return Owner.parent.position + direction * radius * Owner.parent.scaleY;
+    }
     private void Raycast(Vec2 startPosition, Vec2 direction, LightColor color, int order)
     {
         Vec2 visualOffset = Vec2.Zero;
@@ -88,19 +81,12 @@ public class LightCaster: Component
             visualize();
             if (!collision) break;
             collisionData.self.TryGetComponent(typeof(ColliderSurfaceAttributes), out Component attrComponent);
-
             collisionData.self.TryGetComponent(typeof(Sensor), out Component sensorComponent);
 
-
-
-            //if (collisionData.self.LayerMask == "Finish")
             if (sensorComponent != null)
             {
                 Sensor sensor = (Sensor)sensorComponent;
                 sensor.OnHit();
-                //sensorComponent.
-                //collisionData.self.
-                //Settings.Setup.Exit();
                 return;
             }
 
