@@ -172,9 +172,9 @@ using System.Windows.Forms;
         {
             GUI.AddChildren(new GameObject[]
             {
-                new GUIButton("Endurance") { x = 200, y = 360, scaleX = 0.7f, scaleY = 0.7f },
-                new GUIButton("Sandbox", ChooseAsset ) { x = 1054, y = 360, scaleX = 0.7f, scaleY = 0.7f },
-                new GUIButton("Story", () => OpenLevel("Level 1")) { x = 627, y = 360, scaleX = 0.7f, scaleY = 0.7f },
+                new GUIButton("Endurance") { x = 206, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+                new GUIButton("Sandbox", ChooseAsset ) { x = width - 216, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+                new GUIButton("Story", () => OpenLevel("Level 1")) { x = 635, y = 360, scaleX = 0.67f, scaleY = 0.67f },
             });
         }
         void OpenLevel(string name)
