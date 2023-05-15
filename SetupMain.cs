@@ -158,6 +158,7 @@ public class Setup : Game
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
         if (args.Length > 1)
+<<<<<<< HEAD
         {
             OpenEditor(args[1]);
             return;
@@ -186,6 +187,8 @@ public class Setup : Game
             MainLayer.AddChild(AssetManager.LoadAsset(name));
         }
         void OpenEditor(string document)
+=======
+>>>>>>> parent of c2ba97d (Setup for the menu)
         {
             GUI.DestroyChildren();
 
@@ -214,7 +217,7 @@ public class Setup : Game
             Camera.SetFactor(0.1f);
             Settings.ComponentRegistrationBlock = false;
 
-            GXPAssetEditor.Start(document);
+            GXPAssetEditor.Start(args[1]);
             GXPAssetEditor.SubscribeEditor();
             Debug.Log("\n-----Start-----\n");
         }
@@ -235,5 +238,16 @@ public class Setup : Game
                 }
             }
         }
+        #endregion
+
+        #region Setup level
+        MainLayer.AddChild(AssetManager.LoadAsset("MechanicTestLevel"));
+        DocumentPointer.TryGetComponent(typeof(PlayerController), out Component component);
+        typeof(PlayerController).GetProperty("MaxSpeed").SetValue(component, 0);
+        #endregion
+
+        Camera.SetLevel(MainLayer);
+        Camera.AddFocus(DocumentPointer);
+        Debug.Log("\n-----Start-----\n");
     }
 }
