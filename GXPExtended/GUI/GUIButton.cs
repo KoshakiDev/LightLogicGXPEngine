@@ -104,6 +104,9 @@ public enum ButtonState
         {
             SoundManager.PlayOnce("Click");
             _action.Invoke();
+            scaleX -= 0.01f;
+            scaleY -= 0.01f;
+            parent?.SetChildIndex(this, Index - 3);
         }
     }
     #endregion

@@ -164,78 +164,104 @@ public class Setup : Game
         }
         #endregion
 
-
-
-        OpenMenu();
+        LightLogicGame.Start();
         Camera.AddFocus(DocumentPointer);
         Camera.SetLevel(MainLayer);
         Debug.Log("\n-----Start-----\n");
+    }
+    public static void OpenEditor(string document)
+    {
+        GUI.DestroyChildren();
 
-        void OpenMenu()
+        EditorCollisionDebug.AddChild(AssetManager.LoadAsset("editor"));
+        GUI.AddChild(SelectionBox = new Sprite("selection_box", layerMask: "GUI")
         {
-            GUI.AddChildren(new GameObject[]
-            {
-                new GUIButton("Endurance") { x = 206, y = 360, scaleX = 0.67f, scaleY = 0.67f },
-                new GUIButton("Sandbox", ChooseAsset ) { x = width - 216, y = 360, scaleX = 0.67f, scaleY = 0.67f },
-                new GUIButton("Story", () => OpenLevel("Level 1")) { x = 635, y = 360, scaleX = 0.67f, scaleY = 0.67f },
-            });
-        }
-        void OpenLevel(string name)
+            x = 7,
+            y = 240,
+            visible = false,
+        });
+        GUI.AddChild(ComponentBox = new Sprite("component_box", layerMask: "GUI")
         {
-            MainLayer.DestroyChildren();
-            GUI.DestroyChildren();
-
-            MainLayer.AddChild(AssetManager.LoadAsset(name));
-        }
-        void OpenEditor(string document)
+            x = 500,
+            y = 100,
+            visible = false,
+        });
+        GUI.AddChild(ComponentList = new Sprite("component_list", layerMask: "GUI")
         {
-            GUI.DestroyChildren();
+            x = 600,
+            y = 100,
+            visible = false,
+        });
 
-            EditorCollisionDebug.AddChild(AssetManager.LoadAsset("editor"));
-            GUI.AddChild(SelectionBox = new Sprite("selection_box", layerMask: "GUI")
-            {
-                x = 7,
-                y = 240,
-                visible = false,
-            });
-            GUI.AddChild(ComponentBox = new Sprite("component_box", layerMask: "GUI")
-            {
-                x = 500,
-                y = 100,
-                visible = false,
-            });
-            GUI.AddChild(ComponentList = new Sprite("component_list", layerMask: "GUI")
-            {
-                x = 600,
-                y = 100,
-                visible = false,
-            });
+        Camera.SetLevel(MainLayer);
+        Camera.AddFocus(DocumentPointer);
+        Camera.SetFactor(0.1f);
+        Settings.ComponentRegistrationBlock = false;
 
-            Camera.SetLevel(MainLayer);
-            Camera.AddFocus(DocumentPointer);
-            Camera.SetFactor(0.1f);
-            Settings.ComponentRegistrationBlock = false;
+        GXPAssetEditor.Start(document);
+        GXPAssetEditor.SubscribeEditor();
+        Debug.Log("\n-----Start-----\n");
+    }
+}
 
-            GXPAssetEditor.Start(document);
-            GXPAssetEditor.SubscribeEditor();
-            Debug.Log("\n-----Start-----\n");
-        }
-        void ChooseAsset()
+public static class LightLogicGame
+{
+    private static string _currentLevel;
+    public static bool InEditor = false;
+    public static void Start()
+    {
+        OpenMenu();
+    }
+    public static void GameOver()
+    {
+        Setup.GUI.AddChildren(new GameObject[]
         {
-            Debug.Log(">> Started GXP Asset load");
+            new Sprite("game_over") { x = 0, y = 0, scaleX = 0.67f, scaleY = 0.67f },
+            new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"),
+            new GUIButton("btn_return", OpenMenu ) { x = 406, y = 660, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_again", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 660, scaleX = 0.67f, scaleY = 0.67f },
+        });
+    }
+    public static void OpenMenu()
+    {
+        Setup.MainLayer.DestroyChildren();
+        Setup.GUI.DestroyChildren();
 
-            using (OpenFileDialog FileDialog = new OpenFileDialog())
+        Setup.GUI.AddChildren(new GameObject[]
+        {
+            new GUIButton("Endurance") { x = 206, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("Sandbox", ChooseAsset ) { x = Settings.Setup.width - 216, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("Story", () => OpenLevel("Level 1")) { x = 635, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+        });
+    }
+    public static void OpenLevel(string name)
+    {
+        Setup.MainLayer.DestroyChildren();
+        Setup.GUI.DestroyChildren();
+
+        Setup.MainLayer.AddChild(AssetManager.LoadAsset(name));
+        _currentLevel = name;
+    }
+    public static void ChooseAsset()
+    {
+        Debug.Log(">> Started GXP Asset load");
+
+        using (OpenFileDialog FileDialog = new OpenFileDialog())
+        {
+            FileDialog.InitialDirectory = Settings.AssetsPath;
+            FileDialog.Filter = "GXP Assets (*.gxpa)|*.gxpa";
+            FileDialog.RestoreDirectory = true;
+
+            if (FileDialog.ShowDialog() == DialogResult.OK)
             {
-                FileDialog.InitialDirectory = Settings.AssetsPath;
-                FileDialog.Filter = "GXP Assets (*.gxpa)|*.gxpa";
-                FileDialog.RestoreDirectory = true;
-
-                if (FileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    OpenEditor(FileDialog.FileName);
-                    Debug.Log(">> Opened GXP Asset import : " + FileDialog.FileName);
-                }
+                InEditor = true;
+                Setup.OpenEditor(FileDialog.FileName);
+                Debug.Log(">> Opened GXP Asset import : " + FileDialog.FileName);
             }
         }
+    }
+    public static void FinishLevel()
+    {
+
     }
 }

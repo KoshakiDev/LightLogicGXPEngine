@@ -17,6 +17,8 @@ public static class InputManager
 
     public static event OnInput OnLeftMousePressed;
     public static event OnInput OnRightMousePressed;
+    public static event OnInput OnLeftMousePressedDown;
+    public static event OnInput OnRightMousePressedDown;
 
     public static event OnInput OnAnyButtonPressed;
     public static event OnInput OnMouseMoved;
@@ -47,8 +49,11 @@ public static class InputManager
         if (Input.GetKeyDown(Key.SPACE)) OnSpaceButtonPressed?.Invoke();
         if (Input.GetKeyDown(Key.DELETE) || Input.GetKeyDown(Key.DELETE2)) OnDeleteButtonPressed?.Invoke();
 
-        if (Input.GetMouseButtonDown(0)) OnRightMousePressed?.Invoke();
-        if (Input.GetMouseButtonDown(1)) OnLeftMousePressed?.Invoke();
+        if (Input.GetMouseButtonDown(0)) OnRightMousePressedDown?.Invoke();
+        if (Input.GetMouseButtonDown(1)) OnLeftMousePressedDown?.Invoke();
+
+        if (Input.GetMouseButton(0)) OnRightMousePressed?.Invoke();
+        if (Input.GetMouseButton(1)) OnLeftMousePressed?.Invoke();
 
         if (_prevMousePosition != new Vec2(Input.mouseX, Input.mouseY))
         {

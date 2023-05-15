@@ -96,11 +96,11 @@ public class Movable : Component, IRefreshable
 
     private void SubscribeToInput()
     {
-        InputManager.OnRightMousePressed += ChangeSelection;
+        InputManager.OnRightMousePressedDown += ChangeSelection;
     }
     private void UnsubscribeFromInput()
     {
-        InputManager.OnRightMousePressed -= ChangeSelection;
+        InputManager.OnRightMousePressedDown -= ChangeSelection;
     }
 
     private void SubscribeToInputWhenSelected()
