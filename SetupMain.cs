@@ -2,7 +2,8 @@ using GXPEngine;
 using System;
 using System.Windows.Forms;
 
-[Serializable] public class Setup : Game
+[Serializable]
+public class Setup : Game
 {
     //-------------------------------- GRAPHICAL - LAYERS ----------------------------------//
     public static Sprite MainLayer, CollisionDebug, PostProcessing, EditorCollisionDebug, GUI;
@@ -11,7 +12,7 @@ using System.Windows.Forms;
     public static GameObject DocumentPointer, SelectionBox, ComponentBox, ComponentList;
 
     [STAThread] private static void Main() => new Setup();
-    
+
     public Setup() : base(1280, 720, false, pPixelArt: false)
     {
         void settings()
@@ -36,7 +37,7 @@ using System.Windows.Forms;
         void layers()
         {
             Physics.AddLayers(new string[]
-            { 
+            {
                 "Default",
                 "Bullets",
                 "Creatures",
@@ -151,9 +152,9 @@ using System.Windows.Forms;
             //AssetManager.LoadAsset("screenEffect_MULT"),
             //AssetManager.LoadAsset("screenEffect_Add")
         });
-        
+
         #endregion
-        
+
         #region GXP Asset Editor
         string[] args = Environment.GetCommandLineArgs();
         if (args.Length > 1)
@@ -221,18 +222,6 @@ using System.Windows.Forms;
         {
             Debug.Log(">> Started GXP Asset load");
 
-<<<<<<< HEAD
-        #region Setup level
-        MainLayer.AddChild(AssetManager.LoadAsset("SensorTest"));
-        //MainLayer.AddChild(AssetManager.LoadAsset("mechanicTestLevel"));
-        #endregion
-
-
-
-        Camera.SetLevel(MainLayer);
-        Camera.AddFocus(DocumentPointer);
-        Debug.Log("\n-----Start-----\n");
-=======
             using (OpenFileDialog FileDialog = new OpenFileDialog())
             {
                 FileDialog.InitialDirectory = Settings.AssetsPath;
@@ -246,6 +235,5 @@ using System.Windows.Forms;
                 }
             }
         }
->>>>>>> c131e1cdb93eb7ee9b14eec5902e6026edbf9ad9
     }
 }
