@@ -136,15 +136,15 @@ public class Movable : Component, IRefreshable
 
         Vec2 offsetX = new Vec2(65, 0);
 
-        float staticAngle = (Point2 - Point1).angleInDeg;
+        float staticAngle = (Point2 - Point1).angleInDeg + 90;
 
         Vec2 offset_1 = (offsetY + offsetX);
         Vec2 offset_2 = (offsetY - offsetX);
 
 
-        offset_1.RotateAroundDegrees(staticAngle, relativePoint1);
+        offset_1.RotateDegrees(staticAngle);
 
-        offset_2.RotateAroundDegrees(staticAngle, relativePoint2);
+        offset_2.RotateDegrees(staticAngle);
 
 
         Vec2 start = relativePoint1 + offset_1;
@@ -182,7 +182,7 @@ public class Movable : Component, IRefreshable
 
         
 
-        rail.SetScaleXY(Owner.scaleY);
+        //rail.SetScaleXY(Owner.scaleY);
         rail_point_1.SetScaleXY(Owner.scaleY);
         rail_point_2.SetScaleXY(Owner.scaleY);
 
