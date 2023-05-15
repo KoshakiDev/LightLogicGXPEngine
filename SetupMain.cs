@@ -191,6 +191,8 @@ using System;
 
         #region Setup level
         MainLayer.AddChild(AssetManager.LoadAsset("MechanicTestLevel"));
+        DocumentPointer.TryGetComponent(typeof(PlayerController), out Component component);
+        typeof(PlayerController).GetProperty("MaxSpeed").SetValue(component, 0);
         #endregion
 
         Camera.SetLevel(MainLayer);
