@@ -106,9 +106,9 @@ Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProje
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\obj\x86\Debug\GXPEngine.exe
 Z:\Saxion_CMGT\Courses\Third Quartile\Project Lift-Off\Game Repository\GameProject\SaxionFinalApproachGXPEngine\obj\x86\Debug\GXPEngine.pdb
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\bin\Debug\GXPEngine.exe
-\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\bin\Debug\GXPEngine.pdb
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.AssemblyReference.cache
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.SuggestedBindingRedirects.cache
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.csproj.CoreCompileInputs.cache
+\\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\bin\Debug\GXPEngine.pdb
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.exe
 \\Mac\Home\Desktop\2DPhysicsEngine\GXPEngine\obj\x86\Debug\GXPEngine.pdb

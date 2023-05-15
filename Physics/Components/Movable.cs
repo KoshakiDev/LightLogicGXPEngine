@@ -135,19 +135,30 @@ public class Movable : Component, IRefreshable
 
     private void visualize()
     {
-        Vec2 offsetY = new Vec2(0, -40);
+        Vec2 offsetY = new Vec2(0, 0);
 
-        Vec2 offsetX = new Vec2(65, 0);
+        Vec2 offsetX = new Vec2(0, 0);
 
-        float staticAngle = (Point2 - Point1).angleInDeg + 90;
-
-        Vec2 offset_1 = (offsetY + offsetX);
-        Vec2 offset_2 = (offsetY - offsetX);
+        Vec2 offset_1 = new Vec2(0, 0);
+        Vec2 offset_2 = new Vec2(0, 0);
 
 
-        offset_1.RotateDegrees(staticAngle);
+        if (Owner.name == "gun_1")
+        {
+            offsetY = new Vec2(0, -40);
 
-        offset_2.RotateDegrees(staticAngle);
+            //offsetX = new Vec2(65, 0);
+            float staticAngle = (Point2 - Point1).angleInDeg + 90;
+
+            offset_1 = (offsetY + offsetX);
+            offset_2 = (offsetY - offsetX);
+
+
+            offset_1.RotateDegrees(staticAngle);
+
+            offset_2.RotateDegrees(staticAngle);
+
+        }
 
 
         Vec2 start = relativePoint1 + offset_1;
@@ -186,8 +197,8 @@ public class Movable : Component, IRefreshable
         
 
         //rail.SetScaleXY(Owner.scaleY);
-        rail_point_1.SetScaleXY(Owner.scaleY);
-        rail_point_2.SetScaleXY(Owner.scaleY);
+        rail_point_1.SetScaleXY(0.5f);
+        rail_point_2.SetScaleXY(0.5f);
 
 
 
