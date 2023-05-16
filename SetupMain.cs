@@ -165,9 +165,9 @@ public class Setup : Game
         }
         #endregion
 
-        LightLogicGame.Start();
         Camera.AddFocus(DocumentPointer);
         Camera.SetLevel(MainLayer);
+        LightLogicGame.Start();
         Debug.Log("\n-----Start-----\n");
     }
     public static void OpenEditor(string document)
@@ -219,8 +219,8 @@ public static class LightLogicGame
         {
             new Sprite("game_over") { x = 0, y = 0, scaleX = 0.67f, scaleY = 0.67f },
             new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"),
-            new GUIButton("btn_return", OpenMenu ) { x = 406, y = 660, scaleX = 0.67f, scaleY = 0.67f },
-            new GUIButton("btn_again", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 660, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_return", OpenMenu ) { x = 406, y = 560, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_again", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f },
         });
     }
     public static void OpenMenu()
@@ -263,6 +263,12 @@ public static class LightLogicGame
     }
     public static void FinishLevel()
     {
-
+        Setup.GUI.AddChildren(new GameObject[]
+        {
+            new Sprite("level_complete") { x = 0, y = 0, scaleX = 0.67f, scaleY = 0.67f },
+            new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"),
+            new GUIButton("btn_greturn", OpenMenu ) { x = 406, y = 560, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_next", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f },
+        });
     }
 }
