@@ -208,6 +208,8 @@ public class Setup : Game
 public static class LightLogicGame
 {
     private static string _currentLevel;
+    private static int _levelNum = 1;
+    private const int MAX_LEVEL = 10;
     public static bool InEditor = false;
     public static void Start()
     {
@@ -268,7 +270,11 @@ public static class LightLogicGame
             new Sprite("level_complete") { x = 0, y = 0, scaleX = 0.67f, scaleY = 0.67f },
             new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"),
             new GUIButton("btn_greturn", OpenMenu ) { x = 406, y = 560, scaleX = 0.67f, scaleY = 0.67f },
-            new GUIButton("btn_next", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f },
         });
+        if (_levelNum < MAX_LEVEL)
+        {
+            _levelNum++;
+            Setup.GUI.AddChild(new GUIButton("btn_next", () => OpenLevel("Level " + _levelNum)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f });
+        }
     }
 }
