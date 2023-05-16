@@ -148,7 +148,7 @@ public class Movable : Component, IRefreshable
             offsetY = new Vec2(0, -40);
 
             //offsetX = new Vec2(65, 0);
-            float staticAngle = (Point2 - Point1).angleInDeg + 90;
+            float staticAngle = (Point2 - Point1).angleInDeg - (90);
 
             offset_1 = (offsetY + offsetX);
             offset_2 = (offsetY - offsetX);
