@@ -207,9 +207,9 @@ public class Setup : Game
 
 public static class LightLogicGame
 {
-    private static string _currentLevel;
+    private static int _currentLevel;
     private static int _levelNum = 1;
-    private const int MAX_LEVEL = 10;
+    private const int MAX_LEVEL = 8;
     public static bool InEditor = false;
     public static void Start()
     {
@@ -234,17 +234,32 @@ public static class LightLogicGame
         {
             new GUIButton("Endurance") { x = 206, y = 360, scaleX = 0.67f, scaleY = 0.67f },
             new GUIButton("Sandbox", ChooseAsset ) { x = Settings.Setup.width - 216, y = 360, scaleX = 0.67f, scaleY = 0.67f },
-            new GUIButton("Story", () => OpenLevel("Level 1")) { x = 635, y = 360, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("Story", () => OpenLevel(1)) { x = 635, y = 360, scaleX = 0.67f, scaleY = 0.67f },
         });
     }
-    public static void OpenLevel(string name)
+    public static void OpenLevel(int level)
     {
         Setup.MainLayer.DestroyChildren();
         Setup.GUI.DestroyChildren();
 
-        Setup.DocumentPointer.SetXY(120, 240);
-        Setup.MainLayer.AddChild(AssetManager.LoadAsset(name));
-        _currentLevel = name;
+        if (level == 1)
+            Setup.DocumentPointer.SetXY(120, 220);
+        if (level == 2)
+            Setup.DocumentPointer.SetXY(120, 200);
+        if (level == 3)
+            Setup.DocumentPointer.SetXY(120, -170);
+        if (level == 4)
+            Setup.DocumentPointer.SetXY(80, 218);
+        if (level == 5)
+            Setup.DocumentPointer.SetXY(80, 218);
+        if (level == 6)
+            Setup.DocumentPointer.SetXY(80, 218);
+        if (level == 7)
+            Setup.DocumentPointer.SetXY(80, 218);
+        if (level == 8)
+            Setup.DocumentPointer.SetXY(80, 218);
+        Setup.MainLayer.AddChild(AssetManager.LoadAsset("Level " + level));
+        _currentLevel = level;
     }
     public static void ChooseAsset()
     {
@@ -275,7 +290,7 @@ public static class LightLogicGame
         if (_levelNum < MAX_LEVEL)
         {
             _levelNum++;
-            Setup.GUI.AddChild(new GUIButton("btn_next", () => OpenLevel("Level " + _levelNum)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f });
+            Setup.GUI.AddChild(new GUIButton("btn_next", () => OpenLevel(_levelNum)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f });
         }
     }
 }
