@@ -219,8 +219,8 @@ public static class LightLogicGame
         {
             new Sprite("game_over") { x = 0, y = 0, scaleX = 0.67f, scaleY = 0.67f },
             new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"),
-            new GUIButton("btn_return", OpenMenu ) { x = 406, y = 660, scaleX = 0.67f, scaleY = 0.67f },
-            new GUIButton("btn_again", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 660, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_return", OpenMenu ) { x = 406, y = 560, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_again", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f },
         });
     }
     public static void OpenMenu()
@@ -267,8 +267,8 @@ public static class LightLogicGame
         {
             new Sprite("level_complete") { x = 0, y = 0, scaleX = 0.67f, scaleY = 0.67f },
             new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"), new Sprite("Empty"),
-            new GUIButton("btn_greturn", OpenMenu ) { x = 406, y = 660, scaleX = 0.67f, scaleY = 0.67f },
-            new GUIButton("btn_next", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 660, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_greturn", OpenMenu ) { x = 406, y = 560, scaleX = 0.67f, scaleY = 0.67f },
+            new GUIButton("btn_next", () => OpenLevel(_currentLevel)) { x = Settings.Setup.width - 416, y = 560, scaleX = 0.67f, scaleY = 0.67f },
         });
     }
 }

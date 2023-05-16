@@ -6,7 +6,7 @@ using System.Security.Policy;
 public class Sensor : Component
 {
     public float Percentage { get; protected set; } = 0.0f;
-    public float Speed { get; protected set; } = 4.0f; // per second
+    public float Speed { get; protected set; } = 6.0f; // per second
 
     public Sensor(GameObject owner, params string[] args) : base(owner){}
 
@@ -28,7 +28,7 @@ public class Sensor : Component
             TurnOn();
             return;
         }
-        Percentage = Mathf.Clamp(Percentage + (1.0f / (float) Time.deltaTime), 50f, 100f);
+        Percentage = Mathf.Clamp(Percentage + (Speed * Time.deltaTime / 1000f), 40f, 100f);
         Sprite sprite = (Sprite)Owner;
         sprite.color = (uint)sprite.InterpolateColor(0x000000, 0xFFFFFF, Percentage / 100f);
     }
