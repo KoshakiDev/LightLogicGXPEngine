@@ -230,6 +230,8 @@ public static class LightLogicGame
         Setup.MainLayer.DestroyChildren();
         Setup.GUI.DestroyChildren();
 
+        SoundManager.StopAll();
+        SoundManager.Play("menu", false);
         Setup.GUI.AddChildren(new GameObject[]
         {
             new GUIButton("Endurance") { x = 206, y = 360, scaleX = 0.67f, scaleY = 0.67f },
@@ -242,6 +244,8 @@ public static class LightLogicGame
         Setup.MainLayer.DestroyChildren();
         Setup.GUI.DestroyChildren();
 
+        SoundManager.StopAll();
+        SoundManager.Play("sewer", false);
         if (level == 1)
             Setup.DocumentPointer.SetXY(120, 220);
         if (level == 2)

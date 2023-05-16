@@ -37,6 +37,9 @@ public class Sensor : Component
     {
         if (Owner.LayerMask == "Finish")
         {
+            sender.StopSound();
+            InputManager.OnLeftMousePressedDown -= sender.StartSound;
+            InputManager.OnLeftMousePressedUp -= sender.StopSound;
             InputManager.OnLeftMousePressed -= sender.TryToShoot;
             LightLogicGame.FinishLevel();
         }

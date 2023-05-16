@@ -26,7 +26,7 @@ public static class SoundManager
 
     private static SoundChannel LoadSound(string filename, bool looping, bool streaming)
     {
-        Sound sound = new Sound(Settings.AssetsPath + "Sounds\\" + filename + ".wav", looping, streaming);
+        Sound sound = new Sound(Settings.AssetsPath + "Sounds\\" + filename + ".ogg", looping, streaming);
         SoundChannel soundChannel = sound.Play(volume: Settings.Volume);
         return soundChannel;
     }

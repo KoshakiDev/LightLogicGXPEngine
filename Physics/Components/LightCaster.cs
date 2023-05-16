@@ -39,6 +39,16 @@ public class LightCaster: Component
         Setup.GUI.AddChild(cum);
         Setup.GUI.AddChild(new Sprite("cum_bucket") { x = 1070, y = 500, scaleX = 0.6f, scaleY = 0.6f });
         InputManager.OnLeftMousePressed += () => UpdateCum(cum);
+        InputManager.OnLeftMousePressedDown += StartSound;
+        InputManager.OnLeftMousePressedUp += StopSound;
+    }
+    public void StartSound()
+    {
+        SoundManager.Play("laser", false);
+    }
+    public void StopSound()
+    {
+        SoundManager.StopSound("laser");
     }
     protected override void Update()
     {
@@ -214,6 +224,9 @@ public class LightCaster: Component
     {
         if (!LightLogicGame.InEditor)
         {
+            StopSound();
+            InputManager.OnLeftMousePressedDown -= StartSound;
+            InputManager.OnLeftMousePressedUp -= StopSound; ;
             InputManager.OnLeftMousePressed -= TryToShoot;
             LightLogicGame.GameOver();
         }
