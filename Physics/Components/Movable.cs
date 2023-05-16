@@ -1,6 +1,5 @@
 ﻿using GXPEngine;
 using System;
-using System.Windows.Forms;
 
 [Serializable]
 public class Movable : Component, IRefreshable
@@ -91,9 +90,7 @@ public class Movable : Component, IRefreshable
         {
             OnUnselected();
         }
-
     }
-
     private void OnSelected()
     {
         Debug.Log(">> Selected : " + Owner.name);
@@ -135,6 +132,8 @@ public class Movable : Component, IRefreshable
 
     private void visualize()
     {
+        if (Owner.parent is null)
+            return;
         Vec2 offsetY = new Vec2(0, 0);
 
         Vec2 offsetX = new Vec2(0, 0);
@@ -199,17 +198,9 @@ public class Movable : Component, IRefreshable
         //rail.SetScaleXY(Owner.scaleY);
         rail_point_1.SetScaleXY(0.5f);
         rail_point_2.SetScaleXY(0.5f);
-
-
-
-
-        
-
     }
 
-
-
-    private void ClearRails()
+    public void ClearRails()
     {
         rail?.Destroy();
         rail_point_1?.Destroy();

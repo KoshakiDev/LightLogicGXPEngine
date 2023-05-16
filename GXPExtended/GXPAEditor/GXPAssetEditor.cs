@@ -35,6 +35,7 @@ public static class GXPAssetEditor
         InputManager.OnAddCombination += Add;
         InputManager.OnMouseMoved += Transform;
         InputManager.OnDeleteButtonPressed += Delete;
+        InputManager.OnZOrderCombination += () => ZOrder(0);
     }
     public static void UnsubscribeEditor()
     {
@@ -43,6 +44,12 @@ public static class GXPAssetEditor
         InputManager.OnAddCombination -= Add;
         InputManager.OnMouseMoved -= Transform;
         InputManager.OnDeleteButtonPressed -= Delete;
+        InputManager.OnZOrderCombination -= () => ZOrder(0);
+    }
+    private static void ZOrder(int index)
+    {
+        Debug.Log("z ordered selection to " + index + "position");
+        Selection.SelectedGameObject.parent.SetChildIndex(Selection.SelectedGameObject, index);
     }
     private static void OnSelected()
     {

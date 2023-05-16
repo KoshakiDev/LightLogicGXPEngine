@@ -22,7 +22,7 @@ public class Setup : Game
             Settings.ReadParameters();
             Settings.Volume = 0.8f;
             Settings.Fullscreen = false;
-            Settings.CollisionDebug = true;
+            Settings.CollisionDebug = false;
             Settings.CollisionPrecision = 0;
             Settings.ComponentRegistrationBlock = false;
             Settings.RaycastStep = 100;
@@ -242,6 +242,7 @@ public static class LightLogicGame
         Setup.MainLayer.DestroyChildren();
         Setup.GUI.DestroyChildren();
 
+        Setup.DocumentPointer.SetXY(120, 240);
         Setup.MainLayer.AddChild(AssetManager.LoadAsset(name));
         _currentLevel = name;
     }
