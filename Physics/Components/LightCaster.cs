@@ -41,11 +41,11 @@ public class LightCaster: Component
         base.Update();
         ClearRays();
     }
-    private void TryToShoot()
+    public void TryToShoot()
     {
-
         if (Fuel <= 0)
             OnFuelEmpty();
+
         Fuel -= Time.deltaTime / 1000f * 4;
 
         Vec2 startPosition = CalculateStartPosition(out Vec2 direction);
@@ -88,7 +88,7 @@ public class LightCaster: Component
             if (sensorComponent != null)
             {
                 Sensor sensor = (Sensor)sensorComponent;
-                sensor.OnHit();
+                sensor.OnHit(this);
                 return;
             }
 

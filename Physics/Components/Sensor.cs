@@ -21,11 +21,11 @@ public class Sensor : Component
         base.Update();
     }
 
-    public void OnHit()
+    public void OnHit(LightCaster sender)
     {
         if (Percentage == 100f)
         {
-            TurnOn();
+            TurnOn(sender);
             return;
         }
         Percentage = Mathf.Clamp(Percentage + (Speed * Time.deltaTime / 1000f), 40f, 100f);
@@ -33,10 +33,11 @@ public class Sensor : Component
         sprite.color = (uint)sprite.InterpolateColor(0x000000, 0xFFFFFF, Percentage / 100f);
     }
 
-    public void TurnOn()
+    public void TurnOn(LightCaster sender)
     {
         if (Owner.LayerMask == "Finish")
         {
+            InputManager.OnLeftMousePressed -= sender.TryToShoot;
             LightLogicGame.FinishLevel();
         }
     }
