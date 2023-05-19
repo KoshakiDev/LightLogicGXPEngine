@@ -23,7 +23,6 @@ public class LightCaster: Component
 
     private int _reflectCount = 0;
     private List<Sprite> _rays = new List<Sprite>();
-
     public float Fuel { get; protected set; }
     public LightCaster(GameObject owner, params string[] args) : base(owner)
     {
@@ -34,12 +33,33 @@ public class LightCaster: Component
     public override void Refresh()
     {
         base.Refresh();
+        Fuel = 100;
         InputManager.OnLeftMousePressed += TryToShoot;
+        Sprite cum = new Sprite("cum") { x = 1070, y = 500, scaleX = 0.6f, scaleY = 0.6f };
+        Setup.GUI.AddChild(cum);
+        Setup.GUI.AddChild(new Sprite("cum_bucket") { x = 1070, y = 500, scaleX = 0.6f, scaleY = 0.6f });
+        InputManager.OnLeftMousePressed += () => UpdateCum(cum);
+        InputManager.OnLeftMousePressedDown += StartSound;
+        InputManager.OnLeftMousePressedUp += StopSound;
+    }
+    public void StartSound()
+    {
+        SoundManager.Play("laser", false);
+    }
+    public void StopSound()
+    {
+        SoundManager.StopSound("laser");
     }
     protected override void Update()
     {
         base.Update();
         ClearRays();
+    }
+    public void UpdateCum(Sprite cum)
+    {
+        if (cum is null) return;
+        Vec2 direction = new Vec2(0.9f, 1);
+        cum.SetXY(new Vec2(1070,500) + direction * (100 - Fuel));
     }
     public void TryToShoot()
     {
@@ -204,6 +224,9 @@ public class LightCaster: Component
     {
         if (!LightLogicGame.InEditor)
         {
+            StopSound();
+            InputManager.OnLeftMousePressedDown -= StartSound;
+            InputManager.OnLeftMousePressedUp -= StopSound; ;
             InputManager.OnLeftMousePressed -= TryToShoot;
             LightLogicGame.GameOver();
         }

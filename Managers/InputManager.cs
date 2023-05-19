@@ -3,7 +3,7 @@
 public static class InputManager
 {
     public delegate void OnInput();
-    
+
     public static event OnInput OnUpButtonPressed;
     public static event OnInput OnDownButtonPressed;
     public static event OnInput OnRightButtonPressed;
@@ -19,12 +19,15 @@ public static class InputManager
     public static event OnInput OnRightMousePressed;
     public static event OnInput OnLeftMousePressedDown;
     public static event OnInput OnRightMousePressedDown;
+    public static event OnInput OnLeftMousePressedUp;
+    public static event OnInput OnRightMousePressedUp;
 
     public static event OnInput OnAnyButtonPressed;
     public static event OnInput OnMouseMoved;
 
     public static event OnInput OnSaveCombination;
     public static event OnInput OnAddCombination;
+    public static event OnInput OnZOrderCombination;
 
     public static Vec2 MouseDelta => _prevMousePosition - _currentMousePosition;
     private static Vec2 _prevMousePosition;
@@ -33,6 +36,7 @@ public static class InputManager
     {
         if (Input.AnyKey()) OnAnyButtonPressed?.Invoke();
 
+        if (Input.GetKey(Key.Z) && Input.GetKeyDown(Key.LEFT_SHIFT)) OnZOrderCombination?.Invoke();
         if (Input.GetKey(Key.S) && Input.GetKeyDown(Key.LEFT_CTRL)) OnSaveCombination?.Invoke();
         if (Input.GetKey(Key.D) && Input.GetKeyDown(Key.LEFT_CTRL)) Debug.Log(Settings.Setup.GetDiagnostics());
         if (Input.GetKey(Key.P) && Input.GetKeyDown(Key.LEFT_CTRL)) Setup.PostProcessing.visible = !Setup.PostProcessing.visible;
@@ -48,6 +52,9 @@ public static class InputManager
         if (Input.GetKey(Key.D)) OnDButtonPressed?.Invoke();
         if (Input.GetKeyDown(Key.SPACE)) OnSpaceButtonPressed?.Invoke();
         if (Input.GetKeyDown(Key.DELETE) || Input.GetKeyDown(Key.DELETE2)) OnDeleteButtonPressed?.Invoke();
+
+        if (Input.GetMouseButtonUp(0)) OnRightMousePressedUp?.Invoke();
+        if (Input.GetMouseButtonUp(1)) OnLeftMousePressedUp?.Invoke();
 
         if (Input.GetMouseButtonDown(0)) OnRightMousePressedDown?.Invoke();
         if (Input.GetMouseButtonDown(1)) OnLeftMousePressedDown?.Invoke();
